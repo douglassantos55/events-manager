@@ -1,17 +1,17 @@
 <template>
     <form @submit.prevent="authenticate">
-        <div>
-            <label for="login-email">E-mail</label>
-            <input type="email" v-model="form.email">
-            <div v-if="form.errors.email">{{ form.errors.email }}</div>
-        </div>
+        <va-input
+            type="email"
+            v-model="form.email"
+            label="Email"
+            class="mb-4"
+            :error="!!form.errors.email"
+            :error-messages="form.errors.email"
+        />
 
-        <div>
-            <label for="login-password">Password</label>
-            <input type="password" v-model="form.password">
-        </div>
+        <va-input class="mb-4" type="password" v-model="form.password" label="Password"/>
 
-        <button type="submit" :disabled="form.processing">Login</button>
+        <va-button type="submit" :loading="form.processing">Login</va-button>
     </form>
 </template>
 
