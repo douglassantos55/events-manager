@@ -18,6 +18,10 @@ Route::get('/', function () {
     return inertia('Welcome', ['foo' => 'bar']);
 });
 
+Route::get('/dashboard', function () {
+    return inertia('Welcome');
+})->name('dashboard');
+
 Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'login')->name('login');
     Route::get('/logout', 'logout')->name('logout');
