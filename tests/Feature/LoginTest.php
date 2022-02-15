@@ -2,10 +2,29 @@
 
 namespace Tests\Feature;
 
+use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 
 class LoginTest extends TestCase
 {
+    public function test_logout()
+    {
+        Auth::loginUsingId(1);
+        $response = $this->get(route('logout'));
+
+        $this->assertFalse(Auth::check());
+        $response->assertRedirect(route('login'));
+    }
+
+    public function test_redirects_if_logged_in()
+    {
+        Auth::loginUsingId(1);
+
+        $response = $this->get(route('login'));
+
+        $response->assertRedirect(route('dashboard'));
+    }
+
     public function test_successfully()
     {
         $response = $this->post(route('login'), [

@@ -20,7 +20,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return inertia('Welcome');
-})->name('dashboard');
+})->name('dashboard')->middleware('auth');
 
 Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'login')->name('login');
