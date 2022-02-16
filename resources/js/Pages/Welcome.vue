@@ -1,14 +1,3 @@
 <template>
-    <h1>Hello</h1>
+    <h1 class="display-1">Hello</h1>
 </template>
-
-<script>
-export default {
-    props: {
-        foo: String,
-    },
-    setup(props) {
-        console.log(props)
-    }
-}
-</script>

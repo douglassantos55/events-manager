@@ -19,10 +19,32 @@ class EventController extends Controller
         ]);
     }
 
+    public function view(Event $event)
+    {
+        return inertia('Event', ['event' => $event]);
+    }
+
     public function create()
     {
         $this->authorize('create', Event::class);
 
         return inertia('NewEvent');
+    }
+
+    public function store(Request $request)
+    {
+        $this->authorize('create', Event::class);
+
+        $validated = $request->validate([
+            'title' => ['required', 'unique:events'],
+            'attending_date' => ['required', 'date'],
+            'budget' => ['required', 'numeric'],
+            'users' => ['sometimes', 'array'],
+        ]);
+
+        $event = $request->user()->events()->create($validated);
+        $event->assignees()->sync($validated['users']);
+
+        return redirect()->route('events.index');
     }
 }

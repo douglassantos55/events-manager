@@ -22,6 +22,8 @@ Route::get('/', function () {
 Route::controller(EventController::class)->group(function () {
     Route::get('/events', 'index')->middleware('auth')->name('events.index');
     Route::get('/events/new', 'create')->middleware('auth')->name('events.create');
+    Route::post('/events/save', 'store')->middleware('auth')->name('events.store');
+    Route::get('/events/{event}', 'view')->middleware('auth')->name('events.view');
 });
 
 Route::controller(LoginController::class)->group(function () {

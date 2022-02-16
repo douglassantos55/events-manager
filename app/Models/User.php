@@ -42,5 +42,12 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
+    public $max_events = 10;
+
     public $role = 'administrator';
+
+    public function events()
+    {
+        return $this->hasMany(Event::class);
+    }
 }

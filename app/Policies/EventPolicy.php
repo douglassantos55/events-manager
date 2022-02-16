@@ -41,7 +41,10 @@ class EventPolicy
      */
     public function create(User $user)
     {
-        return in_array($user->role, ['assistant', 'administrator']);
+        $hasLimit = $user->events()->count() < intval($user->max_events);
+        $hasPermission = in_array($user->role, ['assistant', 'administrator']);
+
+        return $hasPermission && $hasLimit;
     }
 
     /**

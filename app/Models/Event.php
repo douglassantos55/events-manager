@@ -9,6 +9,14 @@ class Event extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'title',
+        'attending_date',
+        'budget',
+    ];
+
+    protected $with = ['assignees'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -16,6 +24,6 @@ class Event extends Model
 
     public function assignees()
     {
-        return $this->hasMany(User::class);
+        return $this->belongsToMany(User::class, 'events_users');
     }
 }
