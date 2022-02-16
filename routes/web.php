@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\EventController;
 use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,12 +16,13 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return inertia('Welcome', ['foo' => 'bar']);
-});
-
-Route::get('/dashboard', function () {
     return inertia('Welcome');
-})->name('dashboard')->middleware('auth');
+})->middleware('auth')->name('dashboard');
+
+Route::controller(EventController::class)->group(function () {
+    Route::get('/events', 'index')->middleware('auth')->name('events.index');
+    Route::get('/events/new', 'create')->middleware('auth')->name('events.create');
+});
 
 Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'login')->name('login');
