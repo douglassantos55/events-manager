@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class EventController extends Controller
 {
@@ -28,7 +30,10 @@ class EventController extends Controller
     {
         $this->authorize('create', Event::class);
 
-        return inertia('NewEvent');
+        return inertia('NewEvent', [
+            'users' => User::all(),
+            'save_url' => route('events.store'),
+        ]);
     }
 
     public function store(Request $request)
@@ -41,6 +46,8 @@ class EventController extends Controller
             'budget' => ['required', 'numeric'],
             'users' => ['sometimes', 'array'],
         ]);
+
+        $validated['attending_date'] = Carbon::create($validated['attending_date']);
 
         $event = $request->user()->events()->create($validated);
         $event->assignees()->sync($validated['users']);

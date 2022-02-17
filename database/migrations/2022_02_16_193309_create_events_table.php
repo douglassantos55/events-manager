@@ -17,7 +17,7 @@ return new class extends Migration
         Schema::create('events', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->dateTime('attending_date');
+            $table->dateTimeTz('attending_date');
             $table->unsignedDecimal('budget', 10);
             $table->string('image')->nullable();
             $table->foreignIdFor(User::class);

@@ -16,7 +16,6 @@
 </template>
 
 <script>
-import { reactive } from 'vue'
 import AuthLayout from '../AuthLayout.vue'
 import { useForm } from '@inertiajs/inertia-vue3'
 

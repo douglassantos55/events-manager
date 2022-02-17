@@ -13,6 +13,7 @@ class Event extends Model
         'title',
         'attending_date',
         'budget',
+        'user_id',
     ];
 
     protected $with = ['assignees'];

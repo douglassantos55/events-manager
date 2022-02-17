@@ -2,14 +2,24 @@
 
 namespace Tests\Feature;
 
+use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 
 class LoginTest extends TestCase
 {
+    use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->user = User::factory()->create();
+    }
+
     public function test_logout()
     {
-        Auth::loginUsingId(1);
+        Auth::login($this->user);
         $response = $this->get(route('logout'));
 
         $this->assertFalse(Auth::check());
@@ -18,8 +28,7 @@ class LoginTest extends TestCase
 
     public function test_redirects_if_logged_in()
     {
-        Auth::loginUsingId(1);
-
+        Auth::login($this->user);
         $response = $this->get(route('login'));
 
         $response->assertRedirect(route('dashboard'));

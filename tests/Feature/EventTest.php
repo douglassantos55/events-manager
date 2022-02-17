@@ -2,12 +2,27 @@
 
 namespace Tests\Feature;
 
+use App\Models\Event;
 use App\Models\User;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 
 class EventTest extends TestCase
 {
+    use RefreshDatabase;
+
+    /**
+     * @var User
+     */
+    private $user;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->user = User::factory()->create();
+    }
+
     public function test_needs_authentication()
     {
         $response = $this->get(route('events.index'));
@@ -16,10 +31,8 @@ class EventTest extends TestCase
 
     public function test_needs_permission()
     {
-        $user = User::first();
-        Auth::login($user);
-
-        $user->role = 'editor';
+        Auth::login($this->user);
+        $this->user->role = 'editor';
 
         $response = $this->get(route('events.create'));
         $response->assertForbidden();
@@ -27,11 +40,10 @@ class EventTest extends TestCase
 
     public function test_respects_limit()
     {
-        $user = User::first();
-        Auth::login($user);
+        Auth::login($this->user);
 
-        $user->role = 'assistant';
-        $user->max_events = 0;
+        $this->user->role = 'assistant';
+        $this->user->max_events = 0;
 
         $response = $this->get(route('events.create'));
         $response->assertForbidden();
@@ -39,11 +51,10 @@ class EventTest extends TestCase
 
     public function test_passes_permission()
     {
-        $user = User::first();
-        $user->max_events = 1;
-        $user->role = 'assistant';
+        Auth::login($this->user);
 
-        Auth::login($user);
+        $this->user->max_events = 10;
+        $this->user->role = 'assistant';
 
         $response = $this->get(route('events.create'));
         $response->assertStatus(200);
@@ -51,11 +62,10 @@ class EventTest extends TestCase
 
     public function test_validation()
     {
-        $user = User::first();
-        $user->role = 'assistant';
-        $user->max_events = 1;
+        Auth::login($this->user);
 
-        Auth::login($user);
+        $this->user->role = 'assistant';
+        $this->user->max_events = 10;
 
         $response = $this->post(route('events.store'), [
             'title' => '',
@@ -70,17 +80,41 @@ class EventTest extends TestCase
         ]);
     }
 
+    public function test_unique_title()
+    {
+        Auth::login($this->user);
+
+        $this->user->role = 'assistant';
+        $this->user->max_events = 10;
+
+        Event::create([
+            'title' => 'Testing',
+            'budget' => 1000,
+            'attending_date' => '2022-02-16 21:42:00',
+            'user_id' => $this->user->id,
+        ]);
+
+        $response = $this->post(route('events.store'), [
+            'title' => 'Testing',
+            'attending_date' => '2022-02-16 03:00:00',
+            'budget' => '3350.00',
+        ]);
+
+        $response->assertInvalid([
+            'title' => 'The title has already been taken.',
+        ]);
+    }
+
     public function test_creates_successfully()
     {
-        $user = User::first();
-        $user->role = 'assistant';
-        $user->max_events = 1;
+        Auth::login($this->user);
 
-        Auth::login($user);
+        $this->user->role = 'assistant';
+        $this->user->max_events = 10;
 
         $response = $this->post(route('events.store'), [
             'title' => 'My test event',
-            'attending_date' => '2022-02-16',
+            'attending_date' => '2022-02-16T03:00:00.000Z',
             'budget' => '3350.00',
             'users' => [1],
         ]);

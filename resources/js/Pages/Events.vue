@@ -1,5 +1,5 @@
 <template>
-    <div class="flex align--center justify--space-between">
+    <div class="d-flex mb-4 align--center justify--space-between">
         <h1 class="display-1">Events</h1>
 
         <Link :href="create_url">
