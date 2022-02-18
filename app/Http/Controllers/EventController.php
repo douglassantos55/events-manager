@@ -50,7 +50,7 @@ class EventController extends Controller
         $validated['attending_date'] = Carbon::create($validated['attending_date']);
 
         $event = $request->user()->events()->create($validated);
-        $event->assignees()->sync($validated['users']);
+        $event->assignees()->sync(array_column($validated['users'], 'id'));
 
         return redirect()->route('events.index');
     }
