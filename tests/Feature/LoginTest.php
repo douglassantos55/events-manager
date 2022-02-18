@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
@@ -19,7 +20,7 @@ class LoginTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->create();
+        $this->user = User::factory()->for(Role::factory()->create())->create();
     }
 
     public function test_logout()
@@ -42,11 +43,11 @@ class LoginTest extends TestCase
     public function test_successfully()
     {
         $response = $this->post(route('login'), [
-            'email' => 'douglas@email.com',
+            'email' => $this->user->email,
             'password' => 'password',
         ]);
 
-        $response->assertRedirect(route('dashboard'));
+        $response->assertValid('email');
     }
 
     public function test_empty_password()

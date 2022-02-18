@@ -44,10 +44,18 @@ class User extends Authenticatable
 
     public $max_events = 10;
 
-    public $role = 'administrator';
-
     public function events()
     {
         return $this->hasMany(Event::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function plan()
+    {
+        return $this->belongsTo(Plan::class);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Permission;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -11,7 +12,7 @@ class EventController extends Controller
 {
     public function index(Request $request)
     {
-        $this->authorize('viewAny', Event::class);
+        $this->authorize(Permission::VIEW_EVENTS->value, Event::class);
 
         $events = $request->user()->events;
 
@@ -23,12 +24,14 @@ class EventController extends Controller
 
     public function view(Event $event)
     {
+        $this->authorize(Permission::VIEW_EVENT->value, $event);
+
         return inertia('Event', ['event' => $event]);
     }
 
     public function create()
     {
-        $this->authorize('create', Event::class);
+        $this->authorize(Permission::CREATE_EVENT->value, Event::class);
 
         return inertia('NewEvent', [
             'users' => User::all(),
@@ -38,7 +41,7 @@ class EventController extends Controller
 
     public function store(Request $request)
     {
-        $this->authorize('create', Event::class);
+        $this->authorize(Permission::CREATE_EVENT->value, Event::class);
 
         $validated = $request->validate([
             'title' => ['required', 'unique:events'],
