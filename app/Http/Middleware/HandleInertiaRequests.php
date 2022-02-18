@@ -38,6 +38,7 @@ class HandleInertiaRequests extends Middleware
     {
         return array_merge(parent::share($request), [
             'events_url' => route('events.index'),
+            'roles_url' => route('roles.index'),
         ]);
     }
 }

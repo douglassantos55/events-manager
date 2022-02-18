@@ -5,6 +5,10 @@
 
             <va-spacer />
 
+            <Link :href="roles_url">
+                <va-button icon="create">Roles</va-button>
+            </Link>
+
             <Link :href="events_url">
                 <va-button icon="create">Events</va-button>
             </Link>
@@ -20,7 +24,7 @@
 import { Link } from '@inertiajs/inertia-vue3'
 
 export default {
-    props: ['events_url'],
+    props: ['events_url', 'roles_url'],
     components: {
         Link,
     },

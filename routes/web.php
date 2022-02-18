@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,4 +31,12 @@ Route::controller(LoginController::class)->group(function () {
     Route::get('/login', 'login')->name('login');
     Route::get('/logout', 'logout')->name('logout');
     Route::post('/login', 'authenticate')->name('authenticate');
+});
+
+Route::controller(RoleController::class)->group(function () {
+    Route::get('/roles', 'index')->middleware('auth')->name('roles.index');
+    Route::get('/roles/new', 'create')->middleware('auth')->name('roles.create');
+    Route::post('/roles/save/{role?}', 'save')->middleware('auth')->name('roles.save');
+    Route::get('/roles/delete/{role}', 'destroy')->middleware('auth')->name('roles.destroy');
+    Route::get('/roles/edit/{role}', 'edit')->middleware('auth')->name('roles.edit');
 });
