@@ -16,7 +16,7 @@ class EventPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function viewAny()
+    public function viewEvents()
     {
         return true;
     }
@@ -28,7 +28,7 @@ class EventPolicy
      * @param  \App\Models\Event  $event
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, Event $event)
+    public function viewEvent(User $user, Event $event)
     {
         return $event->user === $user || in_array($user, $event->assignees);
     }
@@ -39,12 +39,9 @@ class EventPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function create(User $user)
+    public function createEvent(User $user)
     {
-        $hasLimit = $user->events()->count() < intval($user->max_events);
-        $hasPermission = in_array($user->role, ['assistant', 'administrator']);
-
-        return $hasPermission && $hasLimit;
+        return $user->events()->count() < intval($user->max_events);
     }
 
     /**
@@ -54,7 +51,7 @@ class EventPolicy
      * @param  \App\Models\Event  $event
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function update(User $user, Event $event)
+    public function updateEvent(User $user, Event $event)
     {
         return in_array($user->role, ['assistant', 'administrator']) && $event->user === $user;
 
@@ -67,7 +64,7 @@ class EventPolicy
      * @param  \App\Models\Event  $event
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, Event $event)
+    public function deleteEvent(User $user, Event $event)
     {
         return $user->role === 'administrator' && $event->user === $user;
     }
@@ -79,7 +76,7 @@ class EventPolicy
      * @param  \App\Models\Event  $event
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function restore(User $user, Event $event)
+    public function restoreEvent(User $user, Event $event)
     {
         return $user->role === 'administrator' && $event->user === $user;
     }

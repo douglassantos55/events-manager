@@ -32,6 +32,13 @@ class EventTest extends TestCase
         $response->assertRedirect(route('login'));
     }
 
+    public function test_list_needs_authorization()
+    {
+        Auth::login($this->user);
+        $response = $this->get(route('events.index'));
+        $response->assertStatus(200);
+    }
+
     public function test_needs_permission()
     {
         $role = new Role();
