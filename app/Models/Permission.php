@@ -15,4 +15,6 @@ enum Permission: string
     case INVITE_MEMBER = 'invite-member';
     case EDIT_MEMBER = 'edit-member';
     case DELETE_MEMBER = 'delete-member';
+
+    case VIEW_ROLES = 'view-roles';
 }

@@ -24,7 +24,7 @@ class EventController extends Controller
 
     public function view(Event $event)
     {
-        $this->authorize(Permission::EDIT_EVENT->value, $event);
+        $this->authorize(Permission::VIEW_EVENT->value, $event);
 
         return inertia('Event', ['event' => $event]);
     }

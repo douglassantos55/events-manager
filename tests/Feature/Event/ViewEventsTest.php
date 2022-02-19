@@ -25,7 +25,7 @@ class ViewEventsTest extends TestCase
         $user = User::factory()->forRole()->create();
 
         $user->plan = new Plan($user, [
-            Permission::VIEW_EVENTS->value => false
+            Permission::VIEW_EVENTS->value => false,
         ]);
 
         Auth::login($user);

@@ -10,6 +10,8 @@ class RoleController extends Controller
 {
     public function index()
     {
+        $this->authorize(Permission::VIEW_ROLES->value, Role::class);
+
         return inertia('Roles', [
             'roles' => Role::all(),
             'create_url' => route('roles.create'),
