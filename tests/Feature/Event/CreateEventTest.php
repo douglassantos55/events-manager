@@ -2,9 +2,7 @@
 
 namespace Tests\Feature;
 
-use App\Models\Event;
 use App\Models\Permission;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
@@ -14,35 +12,14 @@ class EventTest extends TestCase
 {
     use RefreshDatabase;
 
-    /**
-     * @var User
-     */
-    private $user;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->user = User::factory()->for(Role::factory()->create())->create();
-    }
-
     public function test_needs_permission()
     {
-        Auth::login($this->user);
+        $user = User::factory()
+            ->forRole(['permissions' => []])
+            ->hasEvents(11)
+            ->create();
 
-        $this->user->role = new Role([
-            'permissions' => collect([
-                Permission::VIEW_EVENTS,
-            ])
-        ]);
-
-        $response = $this->get(route('events.create'));
-        $response->assertForbidden();
-    }
-
-    public function test_respects_limit()
-    {
-        Auth::login($this->user);
-        $this->user->events = Event::factory(11)->for($this->user)->create();
+        Auth::login($user);
 
         $response = $this->get(route('events.create'));
         $response->assertForbidden();
@@ -50,15 +27,36 @@ class EventTest extends TestCase
 
     public function test_passes_permission()
     {
-        Auth::login($this->user);
+        $user = User::factory()
+            ->forRole(['permissions' => [Permission::CREATE_EVENT]])
+            ->create();
+
+        Auth::login($user);
 
         $response = $this->get(route('events.create'));
         $response->assertStatus(200);
     }
 
+    public function test_respects_limit()
+    {
+        $user = User::factory()
+            ->forRole(['permissions' => [Permission::CREATE_EVENT]])
+            ->hasEvents(11)
+            ->create();
+
+        Auth::login($user);
+
+        $response = $this->get(route('events.create'));
+        $response->assertForbidden();
+    }
+
     public function test_validation()
     {
-        Auth::login($this->user);
+        $user = User::factory()
+            ->forRole(['permissions' => [Permission::CREATE_EVENT]])
+            ->create();
+
+        Auth::login($user);
 
         $response = $this->post(route('events.store'), [
             'title' => '',
@@ -75,17 +73,15 @@ class EventTest extends TestCase
 
     public function test_unique_title()
     {
-        Auth::login($this->user);
+        $user = User::factory()
+            ->forRole(['permissions' => [Permission::CREATE_EVENT]])
+            ->hasEvents(1)
+            ->create();
 
-        Event::create([
-            'title' => 'Testing',
-            'budget' => 1000,
-            'attending_date' => '2022-02-16 21:42:00',
-            'user_id' => $this->user->id,
-        ]);
+        Auth::login($user);
 
         $response = $this->post(route('events.store'), [
-            'title' => 'Testing',
+            'title' => $user->events()->first()->title,
             'attending_date' => '2022-02-16 03:00:00',
             'budget' => '3350.00',
         ]);
@@ -97,7 +93,11 @@ class EventTest extends TestCase
 
     public function test_creates_successfully()
     {
-        Auth::login($this->user);
+        $user = User::factory()
+            ->forRole(['permissions' => [Permission::CREATE_EVENT]])
+            ->create();
+
+        Auth::login($user);
 
         $response = $this->post(route('events.store'), [
             'title' => 'My test event',
