@@ -7,7 +7,6 @@ use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 
@@ -35,22 +34,38 @@ class EventTest extends TestCase
     public function test_list_needs_authorization()
     {
         Auth::login($this->user);
+
+        $this->user->role = new Role([
+            'permissions' => collect([]),
+        ]);
+
+        $response = $this->get(route('events.index'));
+        $response->assertForbidden();
+    }
+
+    public function test_list_passes_authorization()
+    {
+        Auth::login($this->user);
+
+        $this->user->role = new Role([
+            'permissions' => collect([
+                Permission::VIEW_EVENTS,
+            ]),
+        ]);
+
         $response = $this->get(route('events.index'));
         $response->assertStatus(200);
     }
 
     public function test_needs_permission()
     {
-        $role = new Role();
-
-        $role->permissions = Collection::make([
-            Permission::VIEW_EVENTS,
-            Permission::VIEW_EVENT,
-            Permission::EDIT_EVENT,
-        ]);
-
-        $this->user->role = $role;
         Auth::login($this->user);
+
+        $this->user->role = new Role([
+            'permissions' => collect([
+                Permission::VIEW_EVENTS,
+            ])
+        ]);
 
         $response = $this->get(route('events.create'));
         $response->assertForbidden();
@@ -59,7 +74,7 @@ class EventTest extends TestCase
     public function test_respects_limit()
     {
         Auth::login($this->user);
-        $this->user->max_events = 0;
+        $this->user->events = Event::factory(11)->for($this->user)->create();
 
         $response = $this->get(route('events.create'));
         $response->assertForbidden();
@@ -68,7 +83,6 @@ class EventTest extends TestCase
     public function test_passes_permission()
     {
         Auth::login($this->user);
-        $this->user->max_events = 10;
 
         $response = $this->get(route('events.create'));
         $response->assertStatus(200);
@@ -77,7 +91,6 @@ class EventTest extends TestCase
     public function test_validation()
     {
         Auth::login($this->user);
-        $this->user->max_events = 10;
 
         $response = $this->post(route('events.store'), [
             'title' => '',
@@ -95,7 +108,6 @@ class EventTest extends TestCase
     public function test_unique_title()
     {
         Auth::login($this->user);
-        $this->user->max_events = 10;
 
         Event::create([
             'title' => 'Testing',
@@ -118,7 +130,6 @@ class EventTest extends TestCase
     public function test_creates_successfully()
     {
         Auth::login($this->user);
-        $this->user->max_events = 10;
 
         $response = $this->post(route('events.store'), [
             'title' => 'My test event',

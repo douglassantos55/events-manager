@@ -30,7 +30,7 @@ class EventPolicy
      */
     public function viewEvent(User $user, Event $event)
     {
-        return $event->user === $user || in_array($user, $event->assignees);
+        return $event->user === $user;
     }
 
     /**
@@ -39,9 +39,9 @@ class EventPolicy
      * @param  \App\Models\User  $user
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function createEvent(User $user)
+    public function createEvent()
     {
-        return $user->events()->count() < intval($user->max_events);
+        return true;
     }
 
     /**
@@ -53,7 +53,7 @@ class EventPolicy
      */
     public function updateEvent(User $user, Event $event)
     {
-        return in_array($user->role, ['assistant', 'administrator']) && $event->user === $user;
+        return $event->user === $user;
 
     }
 
@@ -66,7 +66,7 @@ class EventPolicy
      */
     public function deleteEvent(User $user, Event $event)
     {
-        return $user->role === 'administrator' && $event->user === $user;
+        return $event->user === $user;
     }
 
     /**
@@ -78,7 +78,7 @@ class EventPolicy
      */
     public function restoreEvent(User $user, Event $event)
     {
-        return $user->role === 'administrator' && $event->user === $user;
+        return $event->user === $user;
     }
 
     /**
@@ -90,6 +90,6 @@ class EventPolicy
      */
     public function forceDelete(User $user, Event $event)
     {
-        return $user->role === 'administrator' && $event->user === $user;
+        return $event->user === $user;
     }
 }

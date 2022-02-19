@@ -28,6 +28,12 @@ class AuthServiceProvider extends ServiceProvider
         $this->registerPolicies();
 
         Gate::before(function (User $user, string $ability) {
+            $response = $user->plan->can($ability);
+
+            if (!is_null($response)) {
+                return $response;
+            }
+
             if (!$user->role->can($ability)) {
                 return Response::deny('Your role is insufficient');
             }
