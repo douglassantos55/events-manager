@@ -20,6 +20,8 @@ class RoleController extends Controller
 
     public function create()
     {
+        $this->authorize(Permission::CREATE_ROLE->value, Role::class);
+
         return inertia('NewRole', [
             'permissions' => Permission::cases(),
             'save_url' => route('roles.save'),
