@@ -36,7 +36,8 @@ Route::controller(EventController::class)->middleware('auth')->group(function ()
 Route::controller(RoleController::class)->middleware('auth')->group(function () {
     Route::get('/roles', 'index')->name('roles.index');
     Route::get('/roles/new', 'create')->name('roles.create');
-    Route::post('/roles/save/{role?}', 'save')->name('roles.save');
-    Route::get('/roles/delete/{role}', 'destroy')->name('roles.destroy');
+    Route::post('/roles/store', 'store')->name('roles.store');
     Route::get('/roles/edit/{role}', 'edit')->name('roles.edit');
+    Route::post('/roles/update/{role}', 'update')->name('roles.update');
+    Route::get('/roles/delete/{role}', 'destroy')->name('roles.destroy');
 });

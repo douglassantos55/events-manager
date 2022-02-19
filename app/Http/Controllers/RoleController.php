@@ -24,39 +24,51 @@ class RoleController extends Controller
 
         return inertia('NewRole', [
             'permissions' => Permission::cases(),
-            'save_url' => route('roles.save'),
+            'save_url' => route('roles.store'),
         ]);
     }
 
     public function edit(Role $role)
     {
+        $this->authorize(Permission::EDIT_ROLE->value, $role);
+
         return inertia('NewRole', [
             'role' => $role,
             'permissions' => Permission::cases(),
-            'save_url' => route('roles.save', ['role' => $role]),
+            'save_url' => route('roles.update', ['role' => $role]),
             'destroy_url' => route('roles.destroy', ['role' => $role]),
         ]);
     }
 
-    public function destroy(Role $role)
+    public function store(Request $request)
     {
-        $role->delete();
-        return redirect()->route('roles.index');
-    }
+        $this->authorize(Permission::CREATE_ROLE->value, Role::class);
 
-    public function save(Request $request, Role $role = null)
-    {
         $validated = $request->validate([
             'name' => ['required'],
             'permissions' => ['required', 'array'],
         ]);
 
-        if (!is_null($role)) {
-            $role->update($validated);
-        } else {
-            Role::create($validated);
-        }
+        Role::create($validated);
+        return redirect()->route('roles.index');
+    }
 
+    public function update(Request $request, Role $role)
+    {
+        $this->authorize(Permission::EDIT_ROLE->value, $role);
+
+        $validated = $request->validate([
+            'name' => ['required'],
+            'permissions' => ['required', 'array'],
+        ]);
+
+        $role->update($validated);
+        return redirect()->route('roles.index');
+    }
+
+    public function destroy(Role $role)
+    {
+        $role->delete();
         return redirect()->route('roles.index');
     }
 }

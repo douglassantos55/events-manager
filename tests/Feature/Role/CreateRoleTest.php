@@ -35,11 +35,23 @@ class CreateRoleTest extends TestCase
         $response->assertOk();
     }
 
+    public function test_store_needs_authorization()
+    {
+        Auth::login(User::factory()->forRole(['permissions' => []])->create());
+
+        $response = $this->post(route('roles.store'), [
+            'name' => 'test',
+            'permissions' => ['foo', 'bar'],
+        ]);
+
+        $response->assertForbidden();
+    }
+
     public function test_validation()
     {
         Auth::login(User::factory()->forRole(['permissions' => [Permission::CREATE_ROLE]])->create());
 
-        $response = $this->post(route('roles.save'), [
+        $response = $this->post(route('roles.store'), [
             'name' => '',
             'permissions' => [],
         ]);
@@ -54,7 +66,7 @@ class CreateRoleTest extends TestCase
     {
         Auth::login(User::factory()->forRole(['permissions' => [Permission::CREATE_ROLE]])->create());
 
-        $response = $this->post(route('roles.save'), [
+        $response = $this->post(route('roles.store'), [
             'name' => 'test',
             'permissions' => ['foo', 'bar'],
         ]);
