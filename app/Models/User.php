@@ -56,7 +56,12 @@ class User extends Authenticatable
     public function plan(): Attribute
     {
         return new Attribute(
-            get: fn ($value) => Plan::create($this, $value),
+            get: function ($value) {
+                if ($value instanceof Plan) {
+                    return $value;
+                }
+                return Plan::create($this, $value);
+            }
         );
     }
 }

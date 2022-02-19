@@ -34,7 +34,7 @@ class Plan
     /**
      * @param array $params
      */
-    private function __construct(User $user, array $params)
+    public function __construct(User $user, array $params)
     {
         $this->user = $user;
         $this->params = $params;
@@ -60,11 +60,31 @@ class Plan
      */
     public function can(string $ability): ?Response
     {
+        if (!$this->hasPermission($ability)) {
+            return Response::deny('Your plan does not allow you to do this');
+        }
+
         return match ($ability) {
             Permission::CREATE_EVENT->value => $this->canCreateEvent(),
             Permission::INVITE_MEMBER->value => $this->canInviteMember(),
             default => null,
         };
+    }
+
+    /**
+     * Checks whether the plan allows for a generic ability.
+     * Assumes it does if not present in params
+     *
+     * @param string $key
+     *
+     * @return bool
+     */
+    private function hasPermission(string $key): bool
+    {
+        if (array_key_exists($key, $this->params)) {
+            return $this->params[$key];
+        }
+        return true;
     }
 
     private function canCreateEvent(): ?Response

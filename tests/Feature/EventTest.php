@@ -25,38 +25,6 @@ class EventTest extends TestCase
         $this->user = User::factory()->for(Role::factory()->create())->create();
     }
 
-    public function test_needs_authentication()
-    {
-        $response = $this->get(route('events.index'));
-        $response->assertRedirect(route('login'));
-    }
-
-    public function test_list_needs_authorization()
-    {
-        Auth::login($this->user);
-
-        $this->user->role = new Role([
-            'permissions' => collect([]),
-        ]);
-
-        $response = $this->get(route('events.index'));
-        $response->assertForbidden();
-    }
-
-    public function test_list_passes_authorization()
-    {
-        Auth::login($this->user);
-
-        $this->user->role = new Role([
-            'permissions' => collect([
-                Permission::VIEW_EVENTS,
-            ]),
-        ]);
-
-        $response = $this->get(route('events.index'));
-        $response->assertStatus(200);
-    }
-
     public function test_needs_permission()
     {
         Auth::login($this->user);
