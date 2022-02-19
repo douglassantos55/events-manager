@@ -30,7 +30,7 @@ class EventPolicy
      */
     public function viewEvent(User $user, Event $event)
     {
-        return $event->user === $user;
+        return $event->user_id === $user->id;
     }
 
     /**
@@ -51,9 +51,9 @@ class EventPolicy
      * @param  \App\Models\Event  $event
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function updateEvent(User $user, Event $event)
+    public function editEvent(User $user, Event $event)
     {
-        return $event->user === $user;
+        return $event->user_id == $user->id;
 
     }
 
@@ -66,7 +66,7 @@ class EventPolicy
      */
     public function deleteEvent(User $user, Event $event)
     {
-        return $event->user === $user;
+        return $event->user_id === $user->id;
     }
 
     /**
@@ -78,7 +78,7 @@ class EventPolicy
      */
     public function restoreEvent(User $user, Event $event)
     {
-        return $event->user === $user;
+        return $event->user_id === $user->id;
     }
 
     /**
@@ -90,6 +90,6 @@ class EventPolicy
      */
     public function forceDelete(User $user, Event $event)
     {
-        return $event->user === $user;
+        return $event->user_id === $user->id;
     }
 }
