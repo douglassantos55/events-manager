@@ -10,14 +10,17 @@ class Plan
         'basic' => [
             'max_events' => 3,
             'max_members' => 10,
+            'max_roles' => 5,
         ],
         'pro' => [
             'max_events' => 10,
             'max_members' => 20,
+            'max_roles' => 10,
         ],
         'premium' => [
             'max_events' => -1,
             'max_members' => -1,
+            'max_roles' => -1,
         ]
     ];
 

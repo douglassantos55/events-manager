@@ -8,12 +8,12 @@ use Illuminate\Http\Request;
 
 class RoleController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $this->authorize(Permission::VIEW_ROLES->value, Role::class);
 
         return inertia('Roles', [
-            'roles' => Role::all(),
+            'roles' => $request->user()->roles,
             'create_url' => route('roles.create'),
         ]);
     }
@@ -49,7 +49,7 @@ class RoleController extends Controller
             'permissions' => ['required', 'array'],
         ]);
 
-        Role::create($validated);
+        $request->user()->roles()->create($validated);
         return redirect()->route('roles.index');
     }
 

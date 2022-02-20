@@ -20,7 +20,7 @@ class LoginTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->user = User::factory()->for(Role::factory()->create())->create();
+        $this->user = User::factory()->hasRoles()->create();
     }
 
     public function test_logout()

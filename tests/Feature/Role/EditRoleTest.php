@@ -21,7 +21,12 @@ class EditRoleTest extends TestCase
 
     public function test_needs_authorization()
     {
-        Auth::login(User::factory()->forRole(['permissions' => []])->create());
+        $user = User::factory()->hasRoles()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [],
+        ]);
+
+        Auth::login($user);
 
         $response = $this->get(route('roles.edit', ['role' => 1]));
         $response->assertForbidden();
@@ -29,7 +34,12 @@ class EditRoleTest extends TestCase
 
     public function test_passes_authorization()
     {
-        Auth::login(User::factory()->forRole(['permissions' => [Permission::EDIT_ROLE]])->create());
+        $user = User::factory()->hasRoles()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::EDIT_ROLE],
+        ]);
+
+        Auth::login($user);
 
         $response = $this->get(route('roles.edit', ['role' => 1]));
         $response->assertOk();
@@ -37,7 +47,12 @@ class EditRoleTest extends TestCase
 
     public function test_update_needs_authorization()
     {
-        Auth::login(User::factory()->forRole(['permissions' => []])->create());
+        $user = User::factory()->hasRoles()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [],
+        ]);
+
+        Auth::login($user);
 
         $response = $this->post(route('roles.update', ['role' => 1]), [
             'name' => 'test',
@@ -49,7 +64,12 @@ class EditRoleTest extends TestCase
 
     public function test_updates_successfully()
     {
-        Auth::login(User::factory()->forRole(['permissions' => [Permission::EDIT_ROLE]])->create());
+        $user = User::factory()->hasRoles()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::EDIT_ROLE],
+        ]);
+
+        Auth::login($user);
 
         $response = $this->post(route('roles.update', ['role' => 1]), [
             'name' => 'test',

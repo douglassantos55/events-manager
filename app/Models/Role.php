@@ -18,6 +18,11 @@ class Role extends Model
         'permissions' => 'collection',
     ];
 
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function can(string $permission)
     {
         return $this->permissions->contains($permission);

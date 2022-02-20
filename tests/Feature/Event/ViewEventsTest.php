@@ -4,6 +4,7 @@ namespace Test\Feature\Event;
 
 use App\Models\Permission;
 use App\Models\Plan;
+use App\Models\Role;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,7 @@ class ViewEventsTest extends TestCase
 
     public function test_plan_authorization()
     {
-        $user = User::factory()->forRole()->create();
+        $user = User::factory()->hasRoles(3)->create();
 
         $user->plan = new Plan($user, [
             Permission::VIEW_EVENTS->value => false,
@@ -36,7 +37,12 @@ class ViewEventsTest extends TestCase
 
     public function test_needs_authorization()
     {
-        Auth::login(User::factory()->forRole(['permissions' => []])->create());
+        $user = User::factory()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => []
+        ]);
+
+        Auth::login($user);
 
         $response = $this->get(route('events.index'));
         $response->assertForbidden();
@@ -44,7 +50,12 @@ class ViewEventsTest extends TestCase
 
     public function test_passes_authorization()
     {
-        Auth::login(User::factory()->forRole()->create());
+        $user = User::factory()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::VIEW_EVENTS]
+        ]);
+
+        Auth::login($user);
 
         $response = $this->get(route('events.index'));
         $response->assertStatus(200);
@@ -52,7 +63,11 @@ class ViewEventsTest extends TestCase
 
     public function test_lists_users_events()
     {
-        $user = User::factory()->forRole()->hasEvents(5)->create();
+        $user = User::factory()->hasEvents(5)->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::VIEW_EVENTS]
+        ]);
+
         Auth::login($user);
 
         $response = $this->get(route('events.index'));

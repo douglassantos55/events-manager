@@ -4,6 +4,7 @@ namespace Test\Feature\Role;
 
 use App\Models\Permission;
 use App\Models\Plan;
+use App\Models\Role;
 use Tests\TestCase;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -22,7 +23,12 @@ class ViewRolesTest extends TestCase
 
     public function test_needs_authorization()
     {
-        Auth::login(User::factory()->forRole(['permissions' => []])->create());
+        $user = User::factory()->hasRoles()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [],
+        ]);
+
+        Auth::login($user);
 
         $response = $this->get(route('roles.index'));
         $response->assertForbidden();
@@ -30,7 +36,7 @@ class ViewRolesTest extends TestCase
 
     public function test_plan_authorization()
     {
-        $user = User::factory()->forRole()->create();
+        $user = User::factory()->hasRoles()->create();
 
         $user->plan = new Plan($user, [
             Permission::VIEW_ROLES->value => false,
@@ -44,7 +50,12 @@ class ViewRolesTest extends TestCase
 
     public function test_passes_authorization()
     {
-        Auth::login(User::factory()->forRole(['permissions' => [Permission::VIEW_ROLES]])->create());
+        $user = User::factory()->hasRoles()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::VIEW_ROLES],
+        ]);
+
+        Auth::login($user);
 
         $response = $this->get(route('roles.index'));
         $response->assertOk();
@@ -52,9 +63,12 @@ class ViewRolesTest extends TestCase
 
     public function test_lists_roles()
     {
-        Auth::login(User::factory()->forRole(['permissions' => [Permission::VIEW_ROLES]])->create());
+        $users = User::factory(2)->hasRoles(3)->create();
+        $users[0]->role = $users[0]->roles()->get()->random();
+
+        Auth::login($users[0]);
 
         $response = $this->get(route('roles.index'));
-        $response->assertInertia(fn (AssertableInertia $page) => $page->has('roles'));
+        $response->assertInertia(fn (AssertableInertia $page) => $page->has('roles', 3));
     }
 }

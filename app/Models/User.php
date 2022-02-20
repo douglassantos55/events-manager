@@ -53,6 +53,11 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    public function roles()
+    {
+        return $this->hasMany(Role::class);
+    }
+
     public function plan(): Attribute
     {
         return new Attribute(

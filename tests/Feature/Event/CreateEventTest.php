@@ -3,21 +3,22 @@
 namespace Tests\Feature;
 
 use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
 use Tests\TestCase;
 
-class EventTest extends TestCase
+class CreateEventTest extends TestCase
 {
     use RefreshDatabase;
 
     public function test_needs_permission()
     {
-        $user = User::factory()
-            ->forRole(['permissions' => []])
-            ->hasEvents(11)
-            ->create();
+        $user = User::factory()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => []
+        ]);
 
         Auth::login($user);
 
@@ -27,9 +28,10 @@ class EventTest extends TestCase
 
     public function test_passes_permission()
     {
-        $user = User::factory()
-            ->forRole(['permissions' => [Permission::CREATE_EVENT]])
-            ->create();
+        $user = User::factory()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::CREATE_EVENT]
+        ]);
 
         Auth::login($user);
 
@@ -39,10 +41,10 @@ class EventTest extends TestCase
 
     public function test_respects_limit()
     {
-        $user = User::factory()
-            ->forRole(['permissions' => [Permission::CREATE_EVENT]])
-            ->hasEvents(11)
-            ->create();
+        $user = User::factory()->hasEvents(11)->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::CREATE_EVENT]
+        ]);
 
         Auth::login($user);
 
@@ -52,9 +54,10 @@ class EventTest extends TestCase
 
     public function test_validation()
     {
-        $user = User::factory()
-            ->forRole(['permissions' => [Permission::CREATE_EVENT]])
-            ->create();
+        $user = User::factory()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::CREATE_EVENT]
+        ]);
 
         Auth::login($user);
 
@@ -73,10 +76,10 @@ class EventTest extends TestCase
 
     public function test_unique_title()
     {
-        $user = User::factory()
-            ->forRole(['permissions' => [Permission::CREATE_EVENT]])
-            ->hasEvents(1)
-            ->create();
+        $user = User::factory()->hasEvents(1)->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::CREATE_EVENT]
+        ]);
 
         Auth::login($user);
 
@@ -93,9 +96,10 @@ class EventTest extends TestCase
 
     public function test_creates_successfully()
     {
-        $user = User::factory()
-            ->forRole(['permissions' => [Permission::CREATE_EVENT]])
-            ->create();
+        $user = User::factory()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::CREATE_EVENT]
+        ]);
 
         Auth::login($user);
 

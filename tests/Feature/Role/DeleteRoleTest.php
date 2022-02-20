@@ -15,7 +15,7 @@ class DeleteRoleTest extends TestCase
 
     public function test_needs_authentication()
     {
-        $role = Role::factory()->create();
+        $role = Role::factory()->forUser()->create();
 
         $response = $this->get(route('roles.destroy', ['role' => $role->id]));
         $response->assertRedirect(route('login'));
@@ -23,7 +23,7 @@ class DeleteRoleTest extends TestCase
 
     public function test_needs_authorization()
     {
-        $role = Role::factory()->create(['permissions' => []]);
+        $role = Role::factory()->forUser()->create(['permissions' => []]);
         Auth::login(User::factory()->for($role)->create());
 
         $response = $this->get(route('roles.destroy', ['role' => $role->id]));
@@ -32,7 +32,7 @@ class DeleteRoleTest extends TestCase
 
     public function test_passes_authorization()
     {
-        $role = Role::factory()->create(['permissions' => [Permission::DELETE_ROLE->value]]);
+        $role = Role::factory()->forUser()->create(['permissions' => [Permission::DELETE_ROLE->value]]);
         Auth::login(User::factory()->for($role)->create());
 
         $response = $this->get(route('roles.destroy', ['role' => $role->id]));

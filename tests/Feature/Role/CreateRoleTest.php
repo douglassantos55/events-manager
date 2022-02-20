@@ -21,7 +21,12 @@ class CreateRoleTest extends TestCase
 
     public function test_needs_authorization()
     {
-        Auth::login(User::factory()->forRole(['permissions' => []])->create());
+        $user = User::factory()->hasRoles()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [],
+        ]);
+
+        Auth::login($user);
 
         $response = $this->get(route('roles.create'));
         $response->assertForbidden();
@@ -29,7 +34,12 @@ class CreateRoleTest extends TestCase
 
     public function test_passes_authorization()
     {
-        Auth::login(User::factory()->forRole(['permissions' => [Permission::CREATE_ROLE]])->create());
+        $user = User::factory()->hasRoles()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::CREATE_ROLE],
+        ]);
+
+        Auth::login($user);
 
         $response = $this->get(route('roles.create'));
         $response->assertOk();
@@ -37,7 +47,12 @@ class CreateRoleTest extends TestCase
 
     public function test_store_needs_authorization()
     {
-        Auth::login(User::factory()->forRole(['permissions' => []])->create());
+        $user = User::factory()->hasRoles()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [],
+        ]);
+
+        Auth::login($user);
 
         $response = $this->post(route('roles.store'), [
             'name' => 'test',
@@ -49,7 +64,12 @@ class CreateRoleTest extends TestCase
 
     public function test_validation()
     {
-        Auth::login(User::factory()->forRole(['permissions' => [Permission::CREATE_ROLE]])->create());
+        $user = User::factory()->hasRoles()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::CREATE_ROLE],
+        ]);
+
+        Auth::login($user);
 
         $response = $this->post(route('roles.store'), [
             'name' => '',
@@ -64,7 +84,30 @@ class CreateRoleTest extends TestCase
 
     public function test_creates_successfully()
     {
-        Auth::login(User::factory()->forRole(['permissions' => [Permission::CREATE_ROLE]])->create());
+        $user = User::factory()->hasRoles()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::CREATE_ROLE],
+        ]);
+
+        Auth::login($user);
+
+        $response = $this->post(route('roles.store'), [
+            'name' => 'test',
+            'permissions' => ['foo', 'bar'],
+        ]);
+
+        $this->assertInstanceOf(Role::class, Role::where('name', 'test')->first());
+        $response->assertRedirect(route('roles.index'));
+    }
+
+    public function test_respects_plan_limit()
+    {
+        $user = User::factory()->hasRoles()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::CREATE_ROLE],
+        ]);
+
+        Auth::login($user);
 
         $response = $this->post(route('roles.store'), [
             'name' => 'test',

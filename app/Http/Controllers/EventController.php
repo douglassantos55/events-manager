@@ -14,10 +14,8 @@ class EventController extends Controller
     {
         $this->authorize(Permission::VIEW_EVENTS->value, Event::class);
 
-        $events = $request->user()->events;
-
         return inertia('Events', [
-            'events' => $events,
+            'events' => $request->user()->events,
             'create_url' => route('events.create'),
         ]);
     }
