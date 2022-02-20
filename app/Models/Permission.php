@@ -19,4 +19,5 @@ enum Permission: string
     case VIEW_ROLES = 'view-roles';
     case CREATE_ROLE = 'create-role';
     case EDIT_ROLE = 'edit-role';
+    case DELETE_ROLE = 'delete-role';
 }
