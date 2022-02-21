@@ -30,7 +30,7 @@ class EventPolicy
      */
     public function viewEvent(User $user, Event $event)
     {
-        return $event->user_id === $user->id;
+        return in_array($event->user_id, [$user->id, $user->captain?->id]);
     }
 
     /**
