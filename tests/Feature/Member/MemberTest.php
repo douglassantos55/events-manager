@@ -47,4 +47,12 @@ class MemberTest extends TestCase
         $this->assertFalse($user->role->can('create-event'));
         $this->assertTrue($parent->role->can('create-event'));
     }
+
+    public function test_member_members_are_parents_members()
+    {
+        $parent = User::factory()->hasMembers(5)->create();
+        $user = User::factory()->for($parent, 'captain')->create();
+
+        $this->assertEquals($user->members->all(), $parent->members->all());
+    }
 }

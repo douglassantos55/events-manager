@@ -43,14 +43,6 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
     ];
 
-    public function events()
-    {
-        if ($this->captain) {
-            return $this->captain->events();
-        }
-        return $this->hasMany(Event::class);
-    }
-
     public function captain()
     {
         return $this->belongsTo(User::class, 'captain_id');
@@ -61,12 +53,28 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class);
     }
 
+    public function events()
+    {
+        if ($this->captain) {
+            return $this->captain->events();
+        }
+        return $this->hasMany(Event::class);
+    }
+
     public function roles()
     {
         if ($this->captain) {
             return $this->captain->roles();
         }
         return $this->hasMany(Role::class);
+    }
+
+    public function members()
+    {
+        if ($this->captain) {
+            return $this->captain->members();
+        }
+        return $this->hasMany(User::class, 'captain_id');
     }
 
     public function plan(): Attribute

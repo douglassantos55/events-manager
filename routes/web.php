@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\LoginController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,4 +41,8 @@ Route::controller(RoleController::class)->middleware('auth')->group(function () 
     Route::get('/roles/edit/{role}', 'edit')->name('roles.edit');
     Route::post('/roles/update/{role}', 'update')->name('roles.update');
     Route::get('/roles/delete/{role}', 'destroy')->name('roles.destroy');
+});
+
+Route::controller(MemberController::class)->middleware('auth')->group(function () {
+    Route::get('/members', 'index')->name('members.index');
 });
