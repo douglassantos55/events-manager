@@ -53,6 +53,6 @@ class RolePolicy
      */
     public function deleteRole(User $user, Role $role)
     {
-        return $role->user_id === $user->id;
+        return in_array($role->user_id, [$user->id, $user->captain?->id]);
     }
 }

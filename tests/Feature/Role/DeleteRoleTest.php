@@ -57,4 +57,17 @@ class DeleteRoleTest extends TestCase
         $response = $this->get(route('roles.destroy', ['role' => $roles[0]->id]));
         $response->assertForbidden();
     }
+
+    public function test_member_can_delete_parents_roles()
+    {
+        $parent = User::factory()->hasRoles()->create();
+        $user = User::factory()->for($parent, 'captain')->create();
+
+        $user->role = $parent->roles()->first();
+        Auth::login($user);
+
+        $response = $this->get(route('roles.destroy', ['role' => $parent->roles()->first()->id]));
+        $response->assertRedirect(route('roles.index'));
+        $this->assertModelMissing($user->role);
+    }
 }
