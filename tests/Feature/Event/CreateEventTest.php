@@ -2,6 +2,7 @@
 
 namespace Tests\Feature;
 
+use App\Models\Event;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
@@ -111,5 +112,26 @@ class CreateEventTest extends TestCase
         ]);
 
         $response->assertRedirect(route('events.index'));
+    }
+
+    public function test_event_is_assigned_to_members_parent()
+    {
+        $parent = User::factory()->create();
+        $user = User::factory()->for($parent, 'captain')->create();
+        $user->role = Role::factory()->for($parent)->create([
+            'permissions' => [Permission::CREATE_EVENT],
+        ]);
+
+        Auth::login($user);
+
+        $this->post(route('events.store'), [
+            'title' => 'My test event',
+            'attending_date' => '2022-02-16T03:00:00.000Z',
+            'budget' => '3350.00',
+            'users' => [1],
+        ]);
+
+        $event = Event::where('title', 'My test event')->get()->first();
+        $this->assertTrue($parent->events->contains($event));
     }
 }
