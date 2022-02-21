@@ -54,7 +54,6 @@ class EventPolicy
     public function editEvent(User $user, Event $event)
     {
         return $event->user_id == $user->id;
-
     }
 
     /**

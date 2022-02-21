@@ -116,4 +116,24 @@ class CreateRoleTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_role_is_assigned_to_members_parent()
+    {
+        $parent = User::factory()->create();
+        $user = User::factory()->for($parent, 'captain')->create();
+
+        $user->role = Role::factory()->for($parent)->create([
+            'permissions' => [Permission::CREATE_ROLE],
+        ]);
+
+        Auth::login($user);
+
+        $this->post(route('roles.store'), [
+            'name' => 'test',
+            'permissions' => ['foo', 'bar'],
+        ]);
+
+        $role = Role::where('name', 'test')->get()->first();
+        $this->assertTrue($parent->roles->contains($role));
+    }
 }
