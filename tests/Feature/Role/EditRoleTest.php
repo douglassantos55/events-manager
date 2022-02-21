@@ -98,4 +98,24 @@ class EditRoleTest extends TestCase
 
         $response->assertForbidden();
     }
+
+    public function test_member_can_edit_parents_roles()
+    {
+        $parent = User::factory()->hasRoles()->create();
+        $user = User::factory()->for($parent, 'captain')->create();
+
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::EDIT_ROLE],
+        ]);
+
+        Auth::login($user);
+
+        $response = $this->post(route('roles.update', ['role' => $parent->roles()->first()->id]), [
+            'name' => 'test',
+            'permissions' => ['create-event'],
+        ]);
+
+        $response->assertRedirect(route('roles.index'));
+        $this->assertEquals('test', $parent->roles()->first()->name);
+    }
 }
