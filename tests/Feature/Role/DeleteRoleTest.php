@@ -32,12 +32,29 @@ class DeleteRoleTest extends TestCase
 
     public function test_passes_authorization()
     {
-        $role = Role::factory()->forUser()->create(['permissions' => [Permission::DELETE_ROLE->value]]);
-        Auth::login(User::factory()->for($role)->create());
+        $user = User::factory()->create();
+        $user->role = Role::factory()->for($user)->create(['permissions' => [Permission::DELETE_ROLE]]);
 
-        $response = $this->get(route('roles.destroy', ['role' => $role->id]));
+        Auth::login($user);
+
+        $response = $this->get(route('roles.destroy', ['role' => $user->role->id]));
 
         $response->assertRedirect(route('roles.index'));
-        $this->assertModelMissing($role);
+        $this->assertModelMissing($user->role);
+    }
+
+    public function test_cannot_delete_other_users_roles()
+    {
+        $roles = Role::factory(3)->forUser()->create();
+
+        $user = User::factory()->hasRoles()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::DELETE_ROLE],
+        ]);
+
+        Auth::login($user);
+
+        $response = $this->get(route('roles.destroy', ['role' => $roles[0]->id]));
+        $response->assertForbidden();
     }
 }

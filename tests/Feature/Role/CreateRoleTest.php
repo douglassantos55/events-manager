@@ -102,7 +102,7 @@ class CreateRoleTest extends TestCase
 
     public function test_respects_plan_limit()
     {
-        $user = User::factory()->hasRoles()->create();
+        $user = User::factory()->hasRoles(9)->create();
         $user->role = Role::factory()->for($user)->create([
             'permissions' => [Permission::CREATE_ROLE],
         ]);
@@ -114,7 +114,6 @@ class CreateRoleTest extends TestCase
             'permissions' => ['foo', 'bar'],
         ]);
 
-        $this->assertInstanceOf(Role::class, Role::where('name', 'test')->first());
-        $response->assertRedirect(route('roles.index'));
+        $response->assertForbidden();
     }
 }

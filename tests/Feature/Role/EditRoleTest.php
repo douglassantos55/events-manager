@@ -79,4 +79,23 @@ class EditRoleTest extends TestCase
         $this->assertEquals('test', Role::first()->name);
         $response->assertRedirect(route('roles.index'));
     }
+
+    public function test_cannot_edit_other_users_roles()
+    {
+        $roles = Role::factory(5)->forUser()->create();
+
+        $user = User::factory()->hasRoles()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::EDIT_ROLE],
+        ]);
+
+        Auth::login($user);
+
+        $response = $this->post(route('roles.update', ['role' => $roles[0]->id]), [
+            'name' => 'test',
+            'permissions' => ['create-event'],
+        ]);
+
+        $response->assertForbidden();
+    }
 }

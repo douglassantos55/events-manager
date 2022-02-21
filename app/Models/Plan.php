@@ -69,6 +69,7 @@ class Plan
 
         return match ($ability) {
             Permission::CREATE_EVENT->value => $this->canCreateEvent(),
+            Permission::CREATE_ROLE->value => $this->canCreateRole(),
             Permission::INVITE_MEMBER->value => $this->canInviteMember(),
             default => null,
         };
@@ -105,6 +106,16 @@ class Plan
         if ($this->params['max_members'] != -1) {
             if ($this->user->members()->count() >= $this->params['max_members']) {
                 return Response::deny("You've reached your plan's members limit");
+            }
+        }
+        return null;
+    }
+
+    private function canCreateRole(): ?Response
+    {
+        if ($this->params['max_roles'] != -1) {
+            if ($this->user->roles()->count() >= $this->params['max_roles']) {
+                return Response::deny("You've reached your plan's roles limit");
             }
         }
         return null;

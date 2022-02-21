@@ -39,9 +39,9 @@ class RolePolicy
      * @param  \App\Models\Role  $role
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function editRole()
+    public function editRole(User $user, Role $role)
     {
-        return true;
+        return $role->user_id === $user->id;
     }
 
     /**
@@ -51,8 +51,8 @@ class RolePolicy
      * @param  \App\Models\Role  $role
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function deleteRole()
+    public function deleteRole(User $user, Role $role)
     {
-        return true;
+        return $role->user_id === $user->id;
     }
 }
