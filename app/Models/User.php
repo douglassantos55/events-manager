@@ -45,7 +45,15 @@ class User extends Authenticatable
 
     public function events()
     {
+        if ($this->captain) {
+            return $this->captain->events();
+        }
         return $this->hasMany(Event::class);
+    }
+
+    public function captain()
+    {
+        return $this->belongsTo(User::class, 'captain_id');
     }
 
     public function role()
@@ -55,6 +63,9 @@ class User extends Authenticatable
 
     public function roles()
     {
+        if ($this->captain) {
+            return $this->captain->roles();
+        }
         return $this->hasMany(Role::class);
     }
 
@@ -62,6 +73,9 @@ class User extends Authenticatable
     {
         return new Attribute(
             get: function ($value) {
+                if ($this->captain) {
+                    return $this->captain->plan;
+                }
                 if ($value instanceof Plan) {
                     return $value;
                 }
