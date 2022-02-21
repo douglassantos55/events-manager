@@ -45,4 +45,6 @@ Route::controller(RoleController::class)->middleware('auth')->group(function () 
 
 Route::controller(MemberController::class)->middleware('auth')->group(function () {
     Route::get('/members', 'index')->name('members.index');
+    Route::get('/members/invite', 'invite')->name('members.invite');
+    Route::post('/members/store', 'store')->name('members.store');
 });
