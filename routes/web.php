@@ -43,8 +43,13 @@ Route::controller(RoleController::class)->middleware('auth')->group(function () 
     Route::get('/roles/delete/{role}', 'destroy')->name('roles.destroy');
 });
 
-Route::controller(MemberController::class)->middleware('auth')->group(function () {
-    Route::get('/members', 'index')->name('members.index');
-    Route::get('/members/invite', 'invite')->name('members.invite');
-    Route::post('/members/store', 'store')->name('members.store');
+Route::controller(MemberController::class)->group(function () {
+    Route::middleware('auth')->group(function () {
+        Route::get('/members', 'index')->name('members.index');
+        Route::get('/members/invite', 'invite')->name('members.invite');
+        Route::post('/members/store', 'store')->name('members.store');
+    });
+
+    Route::get('/members/join/{member}', 'join')->name('members.join');
+    Route::post('/members/save/{member}', 'save')->name('members.save');
 });
