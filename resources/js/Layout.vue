@@ -6,12 +6,20 @@
             <va-spacer />
 
             <Link :href="roles_url">
-                <va-button icon="create">Roles</va-button>
+                <va-button>Roles</va-button>
+            </Link>
+
+            <Link :href="members_url">
+                <va-button>Members</va-button>
             </Link>
 
             <Link :href="events_url">
-                <va-button icon="create">Events</va-button>
+                <va-button>Events</va-button>
             </Link>
+
+            <va-spacer />
+
+            <va-button>{{ user.name }}</va-button>
         </va-app-bar>
     </div>
 
@@ -24,7 +32,7 @@
 import { Link } from '@inertiajs/inertia-vue3'
 
 export default {
-    props: ['events_url', 'roles_url'],
+    props: ['user', 'events_url', 'roles_url', 'members_url'],
     components: {
         Link,
     },

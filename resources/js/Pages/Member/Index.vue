@@ -11,7 +11,11 @@
 
         <tbody>
             <tr v-for="member in members" :key="member.id">
-                <td>{{ member.name }}</td>
+                <td>
+                    <Link :href="`/members/edit/${member.id}`">
+                        {{ member.name }}
+                    </Link>
+                </td>
                 <td>{{ member.role.name }}</td>
             </tr>
         </tbody>
@@ -19,7 +23,12 @@
 </template>
 
 <script>
+import { Link } from '@inertiajs/inertia-vue3'
+
 export default {
     props: ['members'],
+    components: {
+        Link,
+    },
 }
 </script>
