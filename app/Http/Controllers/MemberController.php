@@ -18,6 +18,7 @@ class MemberController extends Controller
 
         return inertia('Member/Index', [
             'members' => $request->user()->members()->with('role')->get(),
+            'invite_url' => route('members.invite'),
         ]);
     }
 
