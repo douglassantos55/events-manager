@@ -44,9 +44,12 @@ class InviteMemberTest extends TestCase
         ]);
 
         Auth::login($user);
-
         $response = $this->get(route('members.invite'));
-        $response->assertInertia(fn (AssertableInertia $page) => $page->component('Member/Invite'));
+
+        $response->assertInertia(
+            fn (AssertableInertia $page) =>
+            $page->component('Member/Invite')->has('roles')
+        );
     }
 
     public function test_store_needs_authorization()
@@ -61,6 +64,7 @@ class InviteMemberTest extends TestCase
         $response = $this->post(route('members.store'), [
             'name' => 'john doe',
             'email' => 'johndoe@domain.com',
+            'role_id' => 1,
         ]);
 
         $response->assertForbidden();
@@ -77,14 +81,20 @@ class InviteMemberTest extends TestCase
 
         $response = $this->post(route('members.store'), [
             'name' => '',
+            'role_id' => 6999,
             'email' => 'email#domain.com',
         ]);
-        $response->assertInvalid();
+
+        $response->assertInvalid([
+            'name' => 'The name field is required.',
+            'role_id' => 'The selected role id is invalid.',
+            'email' => 'The email must be a valid email address.',
+        ]);
     }
 
     public function test_member_is_assigned_to_members_parent()
     {
-        $parent = User::factory()->hasMembers()->create();
+        $parent = User::factory()->hasMembers()->hasRoles()->create();
         $user = User::factory()->for($parent, 'captain')->create();
 
         $user->role = Role::factory()->for($user)->create([
@@ -96,6 +106,7 @@ class InviteMemberTest extends TestCase
         $this->post(route('members.store'), [
             'name' => 'John Doe',
             'email' => 'johndoe@email.com',
+            'role_id' => $parent->roles->first()->id,
         ]);
 
         $invited = User::where('email', 'johndoe@email.com')->first();
@@ -108,7 +119,7 @@ class InviteMemberTest extends TestCase
     {
         Mail::fake();
 
-        $user = User::factory()->create();
+        $user = User::factory()->hasRoles()->create();
         $user->role = Role::factory()->for($user)->create([
             'permissions' => [Permission::INVITE_MEMBER],
         ]);
@@ -118,11 +129,14 @@ class InviteMemberTest extends TestCase
         $this->post(route('members.store'), [
             'name' => 'John Doe',
             'email' => 'johndoe@email.com',
+            'role_id' => $user->roles->first()->id,
         ]);
 
         $invited = User::where('email', 'johndoe@email.com')->first();
 
-        $this->assertModelExists($invited);
         Mail::assertSent(MemberInvitation::class);
+
+        $this->assertModelExists($invited);
+        $this->assertEquals($invited->role_id, $user->roles->first()->id);
     }
 }

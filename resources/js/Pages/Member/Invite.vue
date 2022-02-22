@@ -16,6 +16,17 @@
             label="Email" class="mb-4"
         />
 
+        <va-select
+            v-model="form.role_id"
+            :options="roles"
+            text-by="name"
+            value-by="id"
+            label="Role"
+            class="mb-4"
+            :error="!!form.errors.role_id"
+            :error-messages="form.errors.role_id"
+        />
+
         <va-button type="submit" :loading="form.processing">
             Invite
         </va-button>
@@ -26,11 +37,12 @@
 import { useForm } from '@inertiajs/inertia-vue3'
 
 export default {
-    props: ['save_url'],
+    props: ['roles', 'save_url'],
     setup({ save_url }) {
         const form = useForm({
             name: '',
             email: '',
+            role_id: '',
         })
 
         function submit() {

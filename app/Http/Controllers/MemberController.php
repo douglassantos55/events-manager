@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Mail\MemberInvitation;
 use App\Models\Permission;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -20,11 +21,12 @@ class MemberController extends Controller
         ]);
     }
 
-    public function invite()
+    public function invite(Request $request)
     {
         $this->authorize(Permission::INVITE_MEMBER->value, User::class);
 
         return inertia('Member/Invite', [
+            'roles' => $request->user()->roles,
             'save_url' => route('members.store'),
         ]);
     }
@@ -70,6 +72,7 @@ class MemberController extends Controller
         $validated = $request->validate([
             'name' => ['required'],
             'email' => ['required', 'email'],
+            'role_id' => ['required', 'exists:App\Models\Role,id'],
         ]);
 
         $member = $request->user()->members()->create([
