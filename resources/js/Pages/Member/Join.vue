@@ -3,8 +3,8 @@
 
     <form @submit.prevent="submit">
         <va-input label="Name" v-model="form.name" class="mb-4" :error="!!form.errors.name" :error-messages="form.errors.name" />
-        <va-input label="Password" type="passord" v-model="form.password" class="mb-4" :error="!!form.errors.password" :error-messages="form.errors.password" />
-        <va-input label="Confirm password" type="passord" v-model="form.password_confirmation" class="mb-4" />
+        <va-input label="Password" type="password" v-model="form.password" class="mb-4" :error="!!form.errors.password" :error-messages="form.errors.password" />
+        <va-input label="Confirm password" type="password" v-model="form.password_confirmation" class="mb-4" />
 
         <va-button type="submit" :loading="form.processing">
             Join team

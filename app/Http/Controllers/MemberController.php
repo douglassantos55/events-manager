@@ -52,7 +52,11 @@ class MemberController extends Controller
             'password' => ['required', 'confirmed'],
         ]);
 
-        $member->update($validated);
+        $member->update([
+            ...$validated,
+            'password' => bcrypt('password'),
+        ]);
+
         $member->markEmailAsVerified();
 
         Auth::login($member);
