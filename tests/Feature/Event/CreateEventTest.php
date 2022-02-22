@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
 class CreateEventTest extends TestCase
@@ -37,7 +38,7 @@ class CreateEventTest extends TestCase
         Auth::login($user);
 
         $response = $this->get(route('events.create'));
-        $response->assertStatus(200);
+        $response->assertInertia(fn (AssertableInertia $page) => $page->component('Event/Form'));
     }
 
     public function test_respects_limit()

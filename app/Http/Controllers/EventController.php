@@ -14,7 +14,7 @@ class EventController extends Controller
     {
         $this->authorize(Permission::VIEW_EVENTS->value, Event::class);
 
-        return inertia('Events', [
+        return inertia('Event/Index', [
             'events' => $request->user()->events,
             'create_url' => route('events.create'),
         ]);
@@ -24,14 +24,14 @@ class EventController extends Controller
     {
         $this->authorize(Permission::VIEW_EVENT->value, $event);
 
-        return inertia('Event', ['event' => $event]);
+        return inertia('Event/View', ['event' => $event]);
     }
 
     public function create()
     {
         $this->authorize(Permission::CREATE_EVENT->value, Event::class);
 
-        return inertia('NewEvent', [
+        return inertia('Event/Form', [
             'users' => User::all(),
             'save_url' => route('events.store'),
         ]);

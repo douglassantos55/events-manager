@@ -69,6 +69,6 @@ class ViewRolesTest extends TestCase
         Auth::login($users[0]);
 
         $response = $this->get(route('roles.index'));
-        $response->assertInertia(fn (AssertableInertia $page) => $page->has('roles', 3));
+        $response->assertInertia(fn (AssertableInertia $page) => $page->component('Role/Index')->has('roles', 3));
     }
 }

@@ -56,7 +56,7 @@ class ViewMembersTest extends TestCase
         Auth::login($user);
 
         $response = $this->get(route('members.index'));
-        $response->assertInertia(fn (AssertableInertia $page) => $page->has('members', 5));
+        $response->assertInertia(fn (AssertableInertia $page) => $page->component('Member/Index')->has('members', 5));
     }
 
     public function test_lists_parents_members()
@@ -71,6 +71,6 @@ class ViewMembersTest extends TestCase
         Auth::login($user);
 
         $response = $this->get(route('members.index'));
-        $response->assertInertia(fn (AssertableInertia $page) => $page->has('members', 6));
+        $response->assertInertia(fn (AssertableInertia $page) => $page->component('Member/Index')->has('members', 6));
     }
 }

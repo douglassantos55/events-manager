@@ -12,7 +12,7 @@ class RoleController extends Controller
     {
         $this->authorize(Permission::VIEW_ROLES->value, Role::class);
 
-        return inertia('Roles', [
+        return inertia('Role/Index', [
             'roles' => $request->user()->roles,
             'create_url' => route('roles.create'),
         ]);
@@ -22,7 +22,7 @@ class RoleController extends Controller
     {
         $this->authorize(Permission::CREATE_ROLE->value, Role::class);
 
-        return inertia('NewRole', [
+        return inertia('Role/Form', [
             'permissions' => Permission::cases(),
             'save_url' => route('roles.store'),
         ]);
@@ -32,7 +32,7 @@ class RoleController extends Controller
     {
         $this->authorize(Permission::EDIT_ROLE->value, $role);
 
-        return inertia('NewRole', [
+        return inertia('Role/Form', [
             'role' => $role,
             'permissions' => Permission::cases(),
             'save_url' => route('roles.update', ['role' => $role]),

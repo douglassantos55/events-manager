@@ -10,6 +10,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
 class InviteMemberTest extends TestCase
@@ -45,7 +46,24 @@ class InviteMemberTest extends TestCase
         Auth::login($user);
 
         $response = $this->get(route('members.invite'));
-        $response->assertInertia();
+        $response->assertInertia(fn (AssertableInertia $page) => $page->component('Member/Invite'));
+    }
+
+    public function test_store_needs_authorization()
+    {
+        $user = User::factory()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [],
+        ]);
+
+        Auth::login($user);
+
+        $response = $this->post(route('members.store'), [
+            'name' => 'john doe',
+            'email' => 'johndoe@domain.com',
+        ]);
+
+        $response->assertForbidden();
     }
 
     public function test_validation()
@@ -58,6 +76,7 @@ class InviteMemberTest extends TestCase
         Auth::login($user);
 
         $response = $this->post(route('members.store'), [
+            'name' => '',
             'email' => 'email#domain.com',
         ]);
         $response->assertInvalid();

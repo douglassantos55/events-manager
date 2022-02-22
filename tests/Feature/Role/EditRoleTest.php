@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
 class EditRoleTest extends TestCase
@@ -42,7 +43,7 @@ class EditRoleTest extends TestCase
         Auth::login($user);
 
         $response = $this->get(route('roles.edit', ['role' => 1]));
-        $response->assertOk();
+        $response->assertInertia(fn (AssertableInertia $page) => $page->component('Role/Form')->has('role'));
     }
 
     public function test_update_needs_authorization()

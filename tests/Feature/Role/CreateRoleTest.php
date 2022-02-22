@@ -7,6 +7,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
 class CreateRoleTest extends TestCase
@@ -42,7 +43,7 @@ class CreateRoleTest extends TestCase
         Auth::login($user);
 
         $response = $this->get(route('roles.create'));
-        $response->assertOk();
+        $response->assertInertia(fn (AssertableInertia $page) => $page->component('Role/Form'));
     }
 
     public function test_store_needs_authorization()

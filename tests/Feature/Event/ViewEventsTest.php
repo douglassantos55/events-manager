@@ -69,8 +69,11 @@ class ViewEventsTest extends TestCase
         ]);
 
         Auth::login($user);
-
         $response = $this->get(route('events.index'));
-        $response->assertInertia(fn (AssertableInertia $page) => $page->has('events', 5));
+
+        $response->assertInertia(
+            fn (AssertableInertia $page) =>
+            $page->component('Event/Index')->has('events', 5)
+        );
     }
 }

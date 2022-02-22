@@ -8,6 +8,7 @@ use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
+use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
 class ViewEventTest extends TestCase
@@ -47,7 +48,7 @@ class ViewEventTest extends TestCase
         Auth::login($user);
 
         $response = $this->get(route('events.view', ['event' => $event->id]));
-        $response->assertOk();
+        $response->assertInertia(fn (AssertableInertia $page) => $page->component('Event/View')->has('event'));
     }
 
     public function test_cannot_view_other_users_events()
