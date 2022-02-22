@@ -51,6 +51,7 @@ Route::controller(MemberController::class)->group(function () {
 
         Route::get('/members/edit/{member}', 'edit')->name('members.edit');
         Route::post('/members/update/{member}', 'update')->name('members.update');
+        Route::get('/members/delete/{member}', 'destroy')->name('members.destroy');
     });
 
     Route::get('/members/join/{member}', 'join')->name('members.join');

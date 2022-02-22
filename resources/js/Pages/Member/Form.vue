@@ -20,14 +20,21 @@
         />
 
         <va-button type="submit" :loading="form.processing">Update</va-button>
+
+        <Link :href="destroy_url" v-if="destroy_url">
+            <va-button type="button" color="danger" class="ml-2">Delete</va-button>
+        </Link>
     </form>
 </template>
 
 <script>
-import { useForm } from '@inertiajs/inertia-vue3'
+import { Link, useForm } from '@inertiajs/inertia-vue3'
 
 export default {
-    props: ['member', 'roles', 'save_url'],
+    components: {
+        Link,
+    },
+    props: ['member', 'roles', 'save_url', 'destroy_url'],
     setup({ member, save_url }) {
         const form = useForm(member)
 

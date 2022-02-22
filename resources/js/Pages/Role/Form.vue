@@ -1,6 +1,7 @@
 <template>
     <form @submit.prevent="submit">
         <va-input
+            class="mb-4"
             label="Name"
             v-model="form.name"
             :error="!!form.errors.name"
@@ -8,6 +9,7 @@
         />
 
         <va-checkbox
+            class="mb-1"
             v-for="permission in permissions"
             :label="permission"
             v-model="form.permissions"
@@ -16,11 +18,13 @@
             :error-messages="form.errors.permissions"
         />
 
-        <Link :href="destroy_url" v-if="role">
-            <va-button>Delete role</va-button>
-        </Link>
+        <div class="mt-4">
+            <va-button type="submit" :loading="form.processing">Save</va-button>
 
-        <va-button type="submit" :loading="form.processing">Save</va-button>
+            <Link :href="destroy_url" v-if="role">
+                <va-button type="button" color="danger" class="ml-2">Delete role</va-button>
+            </Link>
+        </div>
     </form>
 </template>
 

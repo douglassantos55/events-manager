@@ -51,6 +51,7 @@ class MemberController extends Controller
             'member' => $member,
             'roles' => $request->user()->roles,
             'save_url' => route('members.update', ['member' => $member]),
+            'destroy_url' => route('members.destroy', ['member' => $member]),
         ]);
     }
 
@@ -115,6 +116,14 @@ class MemberController extends Controller
         ]);
 
         $member->update($validated);
+        return redirect()->route('members.index');
+    }
+
+    public function destroy(User $member)
+    {
+        $this->authorize(Permission::DELETE_MEMBER->value, $member);
+
+        $member->delete();
         return redirect()->route('members.index');
     }
 }
