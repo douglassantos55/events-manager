@@ -1,9 +1,21 @@
 <template>
-    <h1 class="display-1">Members</h1>
+    <h1 class="display-1 mb-4">Members</h1>
 
-    <p v-for="member in members" :key="member.id">
-        {{ member.name }}
-    </p>
+    <table class="va-table va-table--striped">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Role</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr v-for="member in members" :key="member.id">
+                <td>{{ member.name }}</td>
+                <td>{{ member.role.name }}</td>
+            </tr>
+        </tbody>
+    </table>
 </template>
 
 <script>

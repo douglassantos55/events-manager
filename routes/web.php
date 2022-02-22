@@ -48,6 +48,9 @@ Route::controller(MemberController::class)->group(function () {
         Route::get('/members', 'index')->name('members.index');
         Route::get('/members/invite', 'invite')->name('members.invite');
         Route::post('/members/store', 'store')->name('members.store');
+
+        Route::get('/members/edit/{member}', 'edit')->name('members.edit');
+        Route::post('/members/update/{member}', 'update')->name('members.update');
     });
 
     Route::get('/members/join/{member}', 'join')->name('members.join');

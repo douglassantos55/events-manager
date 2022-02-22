@@ -24,12 +24,12 @@ class MemberPolicy
      * Determine whether the user can view the model.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\User  $model
+     * @param  \App\Models\User  $member
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function view(User $user, User $model)
+    public function editMember(User $user, User $member)
     {
-        //
+        return in_array($member->captain_id, [$user->id, $user->captain?->id]);
     }
 
     /**
