@@ -2,7 +2,6 @@
 
 namespace Tests\Feature;
 
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Auth;
@@ -107,6 +106,22 @@ class LoginTest extends TestCase
 
         $response->assertInvalid([
             'email' => 'The provided credentials do not match our records',
+        ]);
+    }
+
+    public function test_fails_if_not_verified()
+    {
+        User::factory()->unverified()->create([
+            'email' => 'test@test.com',
+        ]);
+
+        $response = $this->post(route('login'), [
+            'email' => 'test@test.com',
+            'password' => 'password',
+        ]);
+
+        $response->assertInvalid([
+            'email' => 'Your email is not verified',
         ]);
     }
 }
