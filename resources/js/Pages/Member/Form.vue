@@ -21,7 +21,7 @@
 
         <va-button type="submit" :loading="form.processing">Update</va-button>
 
-        <Link :href="destroy_url" v-if="destroy_url">
+        <Link :href="route('members.destroy', member.id)" v-if="member">
             <va-button type="button" color="danger" class="ml-2">Delete</va-button>
         </Link>
     </form>
@@ -34,13 +34,13 @@ export default {
     components: {
         Link,
     },
-    props: ['member', 'roles', 'save_url', 'destroy_url'],
-    setup({ member, save_url }) {
+    props: ['member', 'roles'],
+    setup({ member }) {
         const form = useForm(member)
 
         function submit() {
             form.clearErrors()
-            form.post(save_url)
+            form.post(route('members.update', member.id))
         }
 
         return { form, submit }

@@ -2,7 +2,7 @@
     <div class="mb-4 d-flex align--center justify--space-between">
         <h1 class="display-1">Members</h1>
 
-        <Link :href="invite_url">
+        <Link :href="route('members.invite')">
             <va-button>Invite</va-button>
         </Link>
     </div>
@@ -38,7 +38,7 @@
 import { Link } from '@inertiajs/inertia-vue3'
 
 export default {
-    props: ['members', 'invite_url'],
+    props: ['members'],
     components: {
         Link,
     },

@@ -2,7 +2,9 @@
     <div class="layout gutter--lg">
         <div class="mb-4 d-flex align--center justify--space-between">
             <h1 class="display-1">{{ event.title }}</h1>
-            <va-button icon="edit">Edit</va-button>
+            <Link :href="route('events.create')">
+                <va-button icon="edit">Edit</va-button>
+            </Link>
         </div>
 
         <div class="row">
@@ -77,12 +79,19 @@
 
 <script>
 import { Inertia } from '@inertiajs/inertia'
+import { Link } from '@inertiajs/inertia-vue3'
 
 export default {
     props: ['event'],
+    components: {
+        Link,
+    },
     setup({ event }) {
-        function remove(userId) {
-            Inertia.delete(`/assignees/${event.id}/${userId}`)
+        function remove(assignee) {
+            Inertia.delete(route('assignees.remove', {
+                event: event.id,
+                assignee: assignee,
+            }))
         }
         return { remove }
     }

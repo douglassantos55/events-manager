@@ -14,7 +14,6 @@ class RoleController extends Controller
 
         return inertia('Role/Index', [
             'roles' => $request->user()->roles,
-            'create_url' => route('roles.create'),
         ]);
     }
 
@@ -36,7 +35,6 @@ class RoleController extends Controller
             'role' => $role,
             'permissions' => Permission::cases(),
             'save_url' => route('roles.update', ['role' => $role]),
-            'destroy_url' => route('roles.destroy', ['role' => $role]),
         ]);
     }
 

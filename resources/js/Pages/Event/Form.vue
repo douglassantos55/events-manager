@@ -1,7 +1,7 @@
 <template>
     <h1 class="display-1 mb-4">New Event</h1>
 
-    <form @submit.prevent="form.post(save_url)">
+    <form @submit.prevent="submit">
         <va-input
             v-model="form.title"
             label="Title"
@@ -61,7 +61,7 @@ import { useForm } from '@inertiajs/inertia-vue3'
 
 export default {
     props: ['users', 'save_url'],
-    setup({ users }) {
+    setup({ save_url }) {
         const form = useForm({
             title: '',
             budget: '',
@@ -70,7 +70,12 @@ export default {
             users: [],
         })
 
-        return { form, users: ref(users) }
+        function submit() {
+            form.clearErrors()
+            form.post(save_url)
+        }
+
+        return { form, submit }
     },
 }
 </script>

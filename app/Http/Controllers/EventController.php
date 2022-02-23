@@ -16,7 +16,6 @@ class EventController extends Controller
 
         return inertia('Event/Index', [
             'events' => $request->user()->events,
-            'create_url' => route('events.create'),
         ]);
     }
 

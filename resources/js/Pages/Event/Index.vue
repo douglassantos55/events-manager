@@ -2,14 +2,14 @@
     <div class="d-flex mb-4 align--center justify--space-between">
         <h1 class="display-1">Events</h1>
 
-        <Link :href="create_url">
+        <Link :href="route('events.create')">
             <va-button>New event</va-button>
         </Link>
     </div>
 
     <div class="row">
         <div class="flex md3" v-for="event in events">
-            <Link :href="`/events/${event.id}`">
+            <Link :href="route('events.view', event.id)">
                 <va-card>
                     <va-card-title>{{ event.title }}</va-card-title>
 
@@ -30,14 +30,14 @@
         </div>
     </div>
 
-    <p v-if="!events">no events</p>
+    <p v-if="!events">No events</p>
 </template>
 
 <script>
 import { Link } from '@inertiajs/inertia-vue3'
 
 export default {
-    props: ['events', 'create_url'],
+    props: ['events'],
     components: {
         Link,
     },

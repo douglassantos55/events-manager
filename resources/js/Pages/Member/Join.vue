@@ -17,9 +17,9 @@ import AuthLayout from '../../AuthLayout.vue'
 import { useForm } from '@inertiajs/inertia-vue3'
 
 export default {
-    props: ['member', 'save_url'],
+    props: ['member'],
     layout: AuthLayout,
-    setup({ member, save_url }) {
+    setup({ member }) {
         const form = useForm({
             name: member.name,
             password: '',
@@ -28,7 +28,7 @@ export default {
 
         function submit() {
             form.clearErrors();
-            form.post(save_url)
+            form.post(route('members.save', member.id))
         }
 
         return { form, submit }

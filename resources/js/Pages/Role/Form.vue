@@ -21,7 +21,7 @@
         <div class="mt-4">
             <va-button type="submit" :loading="form.processing">Save</va-button>
 
-            <Link :href="destroy_url" v-if="role">
+            <Link :href="route('roles.destroy', role.id)" v-if="role">
                 <va-button type="button" color="danger" class="ml-2">Delete role</va-button>
             </Link>
         </div>
@@ -32,19 +32,19 @@
 import { Link, useForm } from '@inertiajs/inertia-vue3'
 
 export default {
-    props: ['role', 'save_url', 'destroy_url', 'permissions'],
+    props: ['role', 'save_url', 'permissions'],
     components: {
         Link,
     },
-    setup(props) {
-        const form = useForm(props.role || {
+    setup({ role, save_url }) {
+        const form = useForm(role || {
             name: '',
             permissions: [],
         })
 
         function submit() {
             form.clearErrors()
-            form.post(props.save_url)
+            form.post(save_url)
         }
 
         return { form, submit }

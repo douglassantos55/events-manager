@@ -18,7 +18,6 @@ class MemberController extends Controller
 
         return inertia('Member/Index', [
             'members' => $request->user()->members()->with('role')->get(),
-            'invite_url' => route('members.invite'),
         ]);
     }
 
@@ -28,7 +27,6 @@ class MemberController extends Controller
 
         return inertia('Member/Invite', [
             'roles' => $request->user()->roles,
-            'save_url' => route('members.store'),
         ]);
     }
 
@@ -40,7 +38,6 @@ class MemberController extends Controller
 
         return inertia('Member/Join', [
             'member' => $member,
-            'save_url' => route('members.save', ['member' => $member]),
         ]);
     }
 
@@ -51,8 +48,6 @@ class MemberController extends Controller
         return inertia('Member/Form', [
             'member' => $member,
             'roles' => $request->user()->roles,
-            'save_url' => route('members.update', ['member' => $member]),
-            'destroy_url' => route('members.destroy', ['member' => $member]),
         ]);
     }
 

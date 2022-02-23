@@ -37,8 +37,8 @@
 import { useForm } from '@inertiajs/inertia-vue3'
 
 export default {
-    props: ['roles', 'save_url'],
-    setup({ save_url }) {
+    props: ['roles'],
+    setup() {
         const form = useForm({
             name: '',
             email: '',
@@ -47,7 +47,7 @@ export default {
 
         function submit() {
             form.clearErrors()
-            form.post(save_url)
+            form.post(route('members.store'))
         }
 
         return { form, submit }
