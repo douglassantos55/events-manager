@@ -53,7 +53,7 @@ class EventPolicy
      */
     public function editEvent(User $user, Event $event)
     {
-        return $event->user_id == $user->id;
+        return in_array($event->user_id, [$user->id, $user->captain?->id]);
     }
 
     /**

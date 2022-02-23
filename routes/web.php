@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AssigneeController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MemberController;
@@ -32,6 +33,10 @@ Route::controller(EventController::class)->middleware('auth')->group(function ()
     Route::get('/events/new', 'create')->name('events.create');
     Route::post('/events/save', 'store')->name('events.store');
     Route::get('/events/{event}', 'view')->name('events.view');
+});
+
+Route::controller(AssigneeController::class)->middleware('auth')->group(function () {
+    Route::delete('/assignees/{event}/{assignee}', 'remove')->name('assignees.remove')->scopeBindings();
 });
 
 Route::controller(RoleController::class)->middleware('auth')->group(function () {
