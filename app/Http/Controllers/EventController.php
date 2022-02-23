@@ -27,12 +27,12 @@ class EventController extends Controller
         return inertia('Event/View', ['event' => $event]);
     }
 
-    public function create()
+    public function create(Request $request)
     {
         $this->authorize(Permission::CREATE_EVENT->value, Event::class);
 
         return inertia('Event/Form', [
-            'users' => User::all(),
+            'users' => $request->user()->members,
             'save_url' => route('events.store'),
         ]);
     }

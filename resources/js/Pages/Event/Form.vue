@@ -37,7 +37,17 @@
             />
         </div>
 
-        <va-select v-model="form.users" :options="users" text-by="name" value-by="id" multiple class="mb-4" />
+        <va-select
+            label="Assignees"
+            v-model="form.users"
+            value-by="id"
+            text-by="name"
+            :options="users"
+            :error="!!form.errors.users"
+            :error-messages="form.errors.users"
+            multiple
+            class="mb-4"
+        />
 
         <va-button type="submit" :loading="form.processing">
             Create event
@@ -46,20 +56,21 @@
 </template>
 
 <script>
+import { ref } from 'vue'
 import { useForm } from '@inertiajs/inertia-vue3'
 
 export default {
     props: ['users', 'save_url'],
-    setup() {
+    setup({ users }) {
         const form = useForm({
             title: '',
             budget: '',
-            attending_date: '',
-            attending_time: '',
+            attending_date: new Date(),
+            attending_time: new Date(),
             users: [],
         })
 
-        return { form }
+        return { form, users: ref(users) }
     },
 }
 </script>
