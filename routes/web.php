@@ -36,6 +36,7 @@ Route::controller(EventController::class)->middleware('auth')->group(function ()
 });
 
 Route::controller(AssigneeController::class)->middleware('auth')->group(function () {
+    Route::post('/assignees/{event}/add', 'add')->name('assignees.add');
     Route::delete('/assignees/{event}/{assignee}', 'remove')->name('assignees.remove')->scopeBindings();
 });
 

@@ -19,11 +19,14 @@ class EventController extends Controller
         ]);
     }
 
-    public function view(Event $event)
+    public function view(Request $request, Event $event)
     {
         $this->authorize(Permission::VIEW_EVENT->value, $event);
 
-        return inertia('Event/View', ['event' => $event]);
+        return inertia('Event/View', [
+            'event' => $event,
+            'members' => $request->user()->members,
+        ]);
     }
 
     public function create(Request $request)
