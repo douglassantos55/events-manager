@@ -1,5 +1,7 @@
 <template>
-    <h1 class="display-1 mb-4">New Event</h1>
+    <h1 class="display-1 mb-4">
+        {{ event ? 'Edit' : 'New' }} Event
+    </h1>
 
     <form @submit.prevent="submit">
         <va-input
@@ -47,10 +49,11 @@
             :error-messages="form.errors.users"
             multiple
             class="mb-4"
+            v-if="!event"
         />
 
         <va-button type="submit" :loading="form.processing">
-            Create event
+            Save event
         </va-button>
     </form>
 </template>
@@ -60,15 +63,22 @@ import { ref } from 'vue'
 import { useForm } from '@inertiajs/inertia-vue3'
 
 export default {
-    props: ['users', 'save_url'],
+    props: ['event', 'users', 'save_url'],
     setup(props) {
-        const form = useForm({
+        let event = {
             title: '',
             budget: '',
             attending_date: new Date(),
             attending_time: new Date(),
             users: [],
-        })
+        }
+
+        if (props.event) {
+            event = props.event
+            event.attending_date = new Date(props.event.attending_date)
+        }
+
+        const form = useForm(event)
 
         function submit() {
             form.clearErrors()

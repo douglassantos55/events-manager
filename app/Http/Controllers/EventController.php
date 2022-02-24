@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Permission;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Validation\Rule;
 
 class EventController extends Controller
 {
@@ -41,6 +41,17 @@ class EventController extends Controller
         ]);
     }
 
+    public function edit(Request $request, Event $event)
+    {
+        $this->authorize(Permission::EDIT_EVENT->value, $event);
+
+        return inertia('Event/Form', [
+            'event' => $event,
+            'users' => $request->user()->members,
+            'save_url' => route('events.update', ['event' => $event]),
+        ]);
+    }
+
     public function store(Request $request)
     {
         $this->authorize(Permission::CREATE_EVENT->value, Event::class);
@@ -58,5 +69,24 @@ class EventController extends Controller
         $event->assignees()->sync(array_column($validated['users'], 'id'));
 
         return redirect()->route('events.index');
+    }
+
+    public function update(Request $request, Event $event)
+    {
+        $this->authorize(Permission::EDIT_EVENT->value, $event);
+
+        $validated = $request->validate([
+            'title' => [
+                'required',
+                Rule::unique('events')->ignore($event),
+            ],
+            'attending_date' => ['required', 'date'],
+            'budget' => ['required', 'numeric'],
+        ]);
+
+        $validated['attending_date'] = Carbon::create($validated['attending_date']);
+        $event->update($validated);
+
+        return redirect()->route('events.view', ['event' => $event]);
     }
 }

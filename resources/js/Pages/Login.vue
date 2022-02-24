@@ -21,7 +21,7 @@ import { useForm } from '@inertiajs/inertia-vue3'
 
 export default {
     layout: AuthLayout,
-    setup(props) {
+    setup() {
         const form = useForm({
             email: '',
             password: '',

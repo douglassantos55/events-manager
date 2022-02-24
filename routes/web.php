@@ -33,6 +33,8 @@ Route::controller(EventController::class)->middleware('auth')->group(function ()
     Route::get('/events/new', 'create')->name('events.create');
     Route::post('/events/save', 'store')->name('events.store');
     Route::get('/events/{event}', 'view')->name('events.view');
+    Route::get('/events/edit/{event}', 'edit')->name('events.edit');
+    Route::post('/events/update/{event}', 'update')->name('events.update');
 });
 
 Route::controller(AssigneeController::class)->middleware('auth')->group(function () {

@@ -2,7 +2,7 @@
     <div class="layout gutter--lg">
         <div class="mb-4 d-flex align--center justify--space-between">
             <h1 class="display-1">{{ event.title }}</h1>
-            <Link :href="route('events.create')">
+            <Link :href="route('events.edit', event.id)">
                 <va-button icon="edit">Edit</va-button>
             </Link>
         </div>
