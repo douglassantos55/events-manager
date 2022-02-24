@@ -36,15 +36,15 @@ export default {
     components: {
         Link,
     },
-    setup({ role, save_url }) {
-        const form = useForm(role || {
+    setup(props) {
+        const form = useForm(props.role || {
             name: '',
             permissions: [],
         })
 
         function submit() {
             form.clearErrors()
-            form.post(save_url)
+            form.post(props.save_url)
         }
 
         return { form, submit }

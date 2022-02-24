@@ -19,16 +19,16 @@ import { useForm } from '@inertiajs/inertia-vue3'
 export default {
     props: ['member'],
     layout: AuthLayout,
-    setup({ member }) {
+    setup(props) {
         const form = useForm({
-            name: member.name,
+            name: props.member.name,
             password: '',
             password_confirmation: '',
         })
 
         function submit() {
             form.clearErrors();
-            form.post(route('members.save', member.id))
+            form.post(route('members.save', props.member.id))
         }
 
         return { form, submit }

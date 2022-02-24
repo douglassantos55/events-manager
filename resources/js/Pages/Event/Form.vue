@@ -61,7 +61,7 @@ import { useForm } from '@inertiajs/inertia-vue3'
 
 export default {
     props: ['users', 'save_url'],
-    setup({ save_url }) {
+    setup(props) {
         const form = useForm({
             title: '',
             budget: '',
@@ -72,7 +72,7 @@ export default {
 
         function submit() {
             form.clearErrors()
-            form.post(save_url)
+            form.post(props.save_url)
         }
 
         return { form, submit }

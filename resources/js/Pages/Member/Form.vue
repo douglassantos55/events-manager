@@ -35,12 +35,12 @@ export default {
         Link,
     },
     props: ['member', 'roles'],
-    setup({ member }) {
-        const form = useForm(member)
+    setup(props) {
+        const form = useForm(props.member)
 
         function submit() {
             form.clearErrors()
-            form.post(route('members.update', member.id))
+            form.post(route('members.update', props.member.id))
         }
 
         return { form, submit }
