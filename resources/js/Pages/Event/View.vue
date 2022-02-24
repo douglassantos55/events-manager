@@ -27,7 +27,7 @@
                         Assignees
                         <va-button-dropdown icon="add" size="small" v-if="assignableMembers.length > 0">
                             <va-list fit class="py-0">
-                                <va-list-item href="#" v-for="user in assignableMembers" :key="user.id" @click.prevent="assign(user.id)">
+                                <va-list-item href="#" v-for="user in assignableMembers" :key="user.id" @click="assign(user.id)">
                                     <va-list-item-section avatar>
                                         <va-avatar size="small">
                                             <va-icon name="warning" size="small" />
