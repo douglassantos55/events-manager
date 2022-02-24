@@ -146,4 +146,21 @@ class AddAssigneeTest extends TestCase
         ]);
         $response->assertForbidden();
     }
+
+    public function test_cannot_assign_pending_member()
+    {
+        $user = User::factory()->hasEvents()->create();
+        $member = User::factory()->unverified()->for($user, 'captain')->create();
+
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::EDIT_EVENT],
+        ]);
+
+        Auth::login($user);
+
+        $response = $this->post(route('assignees.add', ['event' => $user->events->first()->id]), [
+            'assignee' => $member->id
+        ]);
+        $response->assertForbidden();
+    }
 }

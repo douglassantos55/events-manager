@@ -14,10 +14,10 @@ class AssigneeController extends Controller
         $this->authorize(Permission::EDIT_EVENT->value, $event);
 
         $id = $request->post('assignee');
-        $assignee = $request->user()->members()->find($id);
+        $assignee = $request->user()->members()->whereNotNull('email_verified_at')->find($id);
 
         if (empty($assignee)) {
-            return abort(403, 'Assignee is not a member');
+            return abort(403, 'Assignee is not a member or has not confirmed the invitation');
         }
 
         $event->assignees()->attach($assignee);

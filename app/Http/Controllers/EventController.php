@@ -23,9 +23,11 @@ class EventController extends Controller
     {
         $this->authorize(Permission::VIEW_EVENT->value, $event);
 
+        $members = $request->user()->members()->whereNotNull('email_verified_at')->get();
+
         return inertia('Event/View', [
             'event' => $event,
-            'members' => $request->user()->members,
+            'members' => $members,
         ]);
     }
 
