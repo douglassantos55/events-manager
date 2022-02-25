@@ -174,4 +174,27 @@ class AddAssigneeTest extends TestCase
         ]));
         $response->assertForbidden();
     }
+
+    public function test_ignores_duplicated_assignee()
+    {
+        $user = User::factory()->hasMembers()->hasEvents()->create();
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::EDIT_EVENT],
+        ]);
+
+        Auth::login($user);
+
+        $event = $user->events->first();
+        $member = $user->members->first();
+        $event->assignees()->attach($member);
+
+        $response = $this->post(route('assignees.add', [
+            'event' => $event->id,
+            'assignee' => $member->id,
+        ]));
+
+        $this->assertCount(1, $event->refresh()->assignees);
+        $this->assertTrue($event->refresh()->assignees->contains($member));
+        $response->assertRedirect(route('events.view', ['event' => $event->id]));
+    }
 }

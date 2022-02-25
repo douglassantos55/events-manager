@@ -18,7 +18,10 @@ class AssigneeController extends Controller
             return abort(403, 'Assignee is not a member or has not confirmed the invitation');
         }
 
-        $event->assignees()->attach($assignee);
+        if (!$event->assignees->contains($assignee)) {
+            $event->assignees()->attach($assignee);
+        }
+
         return redirect()->route('events.view', ['event' => $event]);
     }
 
