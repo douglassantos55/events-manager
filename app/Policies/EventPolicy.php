@@ -57,38 +57,14 @@ class EventPolicy
     }
 
     /**
-     * Determine whether the user can delete the model.
+     * Determine whether the user can add categories to the model.
      *
      * @param  \App\Models\User  $user
      * @param  \App\Models\Event  $event
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function deleteEvent(User $user, Event $event)
+    public function addCategory(User $user, Event $event)
     {
-        return $event->user_id === $user->id;
-    }
-
-    /**
-     * Determine whether the user can restore the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Event  $event
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function restoreEvent(User $user, Event $event)
-    {
-        return $event->user_id === $user->id;
-    }
-
-    /**
-     * Determine whether the user can permanently delete the model.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Event  $event
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function forceDelete(User $user, Event $event)
-    {
-        return $event->user_id === $user->id;
+        return in_array($event->user_id, [$user->id, $user->captain?->id]);
     }
 }

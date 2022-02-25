@@ -20,4 +20,7 @@ enum Permission: string
     case CREATE_ROLE = 'create-role';
     case EDIT_ROLE = 'edit-role';
     case DELETE_ROLE = 'delete-role';
+
+    case ADD_CATEGORY = 'add-category';
+    case ASSIGN_MEMBER = 'assign-member';
 }

@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Event;
 
+use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\User;
 use App\Models\Permission;
@@ -9,14 +10,11 @@ use Illuminate\Http\Request;
 
 class AssigneeController extends Controller
 {
-    public function add(Request $request, Event $event)
+    public function attach(Request $request, Event $event, User $assignee)
     {
         $this->authorize(Permission::EDIT_EVENT->value, $event);
 
-        $id = $request->post('assignee');
-        $assignee = $request->user()->members()->whereNotNull('email_verified_at')->find($id);
-
-        if (empty($assignee)) {
+        if (!$request->user()->members->contains($assignee) || !$assignee->hasVerifiedEmail()) {
             return abort(403, 'Assignee is not a member or has not confirmed the invitation');
         }
 

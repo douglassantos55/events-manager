@@ -1,11 +1,12 @@
 <?php
 
-use App\Http\Controllers\AssigneeController;
-use App\Http\Controllers\EventController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\RoleController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\Event\AssigneeController;
+use App\Http\Controllers\Event\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,18 +29,24 @@ Route::controller(LoginController::class)->group(function () {
     Route::post('/login', 'authenticate')->name('authenticate');
 });
 
-Route::controller(EventController::class)->middleware('auth')->group(function () {
-    Route::get('/events', 'index')->name('events.index');
-    Route::get('/events/new', 'create')->name('events.create');
-    Route::post('/events/save', 'store')->name('events.store');
-    Route::get('/events/{event}', 'view')->name('events.view');
-    Route::get('/events/edit/{event}', 'edit')->name('events.edit');
-    Route::post('/events/update/{event}', 'update')->name('events.update');
-});
+Route::prefix('/events')->group(function () {
+    Route::controller(EventController::class)->middleware('auth')->group(function () {
+        Route::get('/', 'index')->name('events.index');
+        Route::get('/new', 'create')->name('events.create');
+        Route::post('/save', 'store')->name('events.store');
+        Route::get('/{event}', 'view')->name('events.view');
+        Route::get('/edit/{event}', 'edit')->name('events.edit');
+        Route::post('/update/{event}', 'update')->name('events.update');
+    });
 
-Route::controller(AssigneeController::class)->middleware('auth')->group(function () {
-    Route::post('/assignees/{event}/add', 'add')->name('assignees.add');
-    Route::delete('/assignees/{event}/{assignee}', 'remove')->name('assignees.remove')->scopeBindings();
+    Route::controller(AssigneeController::class)->middleware('auth')->group(function () {
+        Route::post('/assignees/{event}/{assignee}', 'attach')->name('assignees.add');
+        Route::delete('/assignees/{event}/{assignee}', 'remove')->name('assignees.remove')->scopeBindings();
+    });
+
+    Route::controller(CategoryController::class)->middleware('auth')->group(function () {
+        Route::post('/categories/{event}/{category}', 'attach')->name('categories.attach');
+    });
 });
 
 Route::controller(RoleController::class)->middleware('auth')->group(function () {

@@ -19,9 +19,11 @@ class AddAssigneeTest extends TestCase
         $user = User::factory()->create();
         $event = Event::factory()->forUser()->create();
 
-        $response = $this->post(route('assignees.add', ['event' => $event]), [
-            'assignee' => $user
-        ]);
+        $response = $this->post(route('assignees.add', [
+            'event' => $event,
+            'assignee' => $user,
+        ]));
+
         $response->assertRedirect(route('login'));
     }
 
@@ -36,9 +38,11 @@ class AddAssigneeTest extends TestCase
 
         Auth::login($event->user);
 
-        $response = $this->post(route('assignees.add', ['event' => $event]), [
-            'assignee' => $user
-        ]);
+        $response = $this->post(route('assignees.add', [
+            'event' => $event,
+            'assignee' => $user,
+        ]));
+
         $response->assertForbidden();
     }
 
@@ -53,9 +57,10 @@ class AddAssigneeTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->post(route('assignees.add', ['event' => $event]), [
+        $response = $this->post(route('assignees.add', [
+            'event' => $event,
             'assignee' => $user->members->first()->id,
-        ]);
+        ]));
         $response->assertRedirect(route('events.view', ['event' => $event]));
     }
 
@@ -70,9 +75,10 @@ class AddAssigneeTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->post(route('assignees.add', ['event' => $other->events->first()]), [
-            'assignee' => $user
-        ]);
+        $response = $this->post(route('assignees.add', [
+            'event' => $other->events->first(),
+            'assignee' => $user,
+        ]));
         $response->assertForbidden();
     }
 
@@ -85,9 +91,10 @@ class AddAssigneeTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->post(route('assignees.add', ['event' => $user->events->first()]), [
+        $response = $this->post(route('assignees.add', [
+            'event' => $user->events->first(),
             'assignee' => User::factory()->create()->id,
-        ]);
+        ]));
         $response->assertForbidden();
     }
 
@@ -103,9 +110,10 @@ class AddAssigneeTest extends TestCase
         Auth::login($user);
 
         $event = $parent->events->first();
-        $response = $this->post(route('assignees.add', ['event' => $event->id]), [
+        $response = $this->post(route('assignees.add', [
+            'event' => $event->id,
             'assignee' => $parent->members->first()->id,
-        ]);
+        ]));
 
         $response->assertRedirect(route('events.view', ['event' => $event->id]));
         $this->assertTrue($event->refresh()->assignees->contains($parent->members->first()));
@@ -122,9 +130,10 @@ class AddAssigneeTest extends TestCase
 
         $event = $user->events->first();
 
-        $response = $this->post(route('assignees.add', ['event' => $event->id]), [
+        $response = $this->post(route('assignees.add', [
+            'event' => $event->id,
             'assignee' => $user->members->first()->id,
-        ]);
+        ]));
 
         $response->assertRedirect(route('events.view', ['event' => $event->id]));
         $this->assertTrue($event->refresh()->assignees->contains($user->members->first()));
@@ -141,9 +150,10 @@ class AddAssigneeTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->post(route('assignees.add', ['event' => $user->events->first()->id]), [
+        $response = $this->post(route('assignees.add', [
+            'event' => $user->events->first()->id,
             'assignee' => $other->members->first()->id,
-        ]);
+        ]));
         $response->assertForbidden();
     }
 
@@ -158,9 +168,10 @@ class AddAssigneeTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->post(route('assignees.add', ['event' => $user->events->first()->id]), [
+        $response = $this->post(route('assignees.add', [
+            'event' => $user->events->first()->id,
             'assignee' => $member->id
-        ]);
+        ]));
         $response->assertForbidden();
     }
 }

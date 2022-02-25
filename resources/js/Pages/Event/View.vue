@@ -83,7 +83,7 @@
             </div>
         </div>
 
-        <va-tabs stateful grow class="mt-4">
+        <va-tabs v-model="tab" grow class="mt-4">
             <template #tabs>
                 <va-tab
                     v-for="title in ['Dashboard', 'Suppliers', 'Agenda', 'Guests']"
@@ -95,20 +95,50 @@
                 </va-tab>
             </template>
         </va-tabs>
+
+        <div class="mt-4">
+            <div v-if="tab === 'Suppliers'">
+                <div class="d-flex justify--space-between align--center">
+                    <h2 class="display-3">Suppliers</h2>
+
+                    <va-button-dropdown icon="add" size="small">
+                        <va-list fit class="py-0">
+                            <va-list-item href="#" v-for="cat in categories" :key="cat.id" @click="addCategory(cat.id)">
+                                <va-list-item-section>
+                                    <va-list-item-label>
+                                        {{ cat.name }}
+                                    </va-list-item-label>
+                                </va-list-item-section>
+                            </va-list-item>
+                        </va-list>
+                    </va-button-dropdown>
+                </div>
+
+                <va-list fit>
+                    <va-list-item v-for="cat in event.categories" :key="cat.id">
+                        <va-list-item-section>
+                            {{ cat.name }} - {{ cat.pivot.budget }}
+                        </va-list-item-section>
+                    </va-list-item>
+                </va-list>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
 import { Link } from '@inertiajs/inertia-vue3'
 
 export default {
-    props: ['event', 'members'],
+    props: ['event', 'members', 'categories'],
     components: {
         Link,
     },
     setup(props) {
+        const tab = ref('Dashboard')
+
         function remove(assignee) {
             Inertia.delete(route('assignees.remove', {
                 event: props.event.id,
@@ -117,14 +147,24 @@ export default {
         }
 
         function assign(assignee) {
-            Inertia.post(route('assignees.add', props.event.id), { assignee });
+            Inertia.post(route('assignees.add', {
+                assignee,
+                event: props.event.id
+            }));
+        }
+
+        function addCategory(category) {
+            Inertia.post(route('categories.attach', {
+                category,
+                event: props.event.id,
+            }), { budget: 1000 });
         }
 
         const assignableMembers = computed(() => props.members.filter(member => {
             return !props.event.assignees.find(assignee => assignee.id === member.id)
         }));
 
-        return { remove, assign, assignableMembers }
+        return { tab, remove, assign, addCategory, assignableMembers }
     },
 }
 </script>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Permission;
+use App\Models\SupplierCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
@@ -23,11 +24,13 @@ class EventController extends Controller
     {
         $this->authorize(Permission::VIEW_EVENT->value, $event);
 
+        $event->loadMissing(['categories', 'assignees', 'suppliers']);
         $members = $request->user()->members()->whereNotNull('email_verified_at')->get();
 
         return inertia('Event/View', [
             'event' => $event,
             'members' => $members,
+            'categories' => SupplierCategory::all(),
         ]);
     }
 
