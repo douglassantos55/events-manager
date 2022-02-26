@@ -40,12 +40,12 @@ Route::prefix('/events')->group(function () {
     });
 
     Route::controller(AssigneeController::class)->middleware('auth')->group(function () {
-        Route::post('/assignees/{event}/{assignee}', 'attach')->name('assignees.add');
+        Route::post('/assignees/{event}', 'attach')->name('assignees.attach');
         Route::delete('/assignees/{event}/{assignee}', 'remove')->name('assignees.remove')->scopeBindings();
     });
 
     Route::controller(CategoryController::class)->middleware('auth')->group(function () {
-        Route::post('/categories/{event}/{category}', 'attach')->name('categories.attach');
+        Route::post('/categories/{event}', 'attach')->name('categories.attach');
     });
 });
 

@@ -19,10 +19,9 @@ class AddAssigneeTest extends TestCase
         $user = User::factory()->create();
         $event = Event::factory()->forUser()->create();
 
-        $response = $this->post(route('assignees.add', [
-            'event' => $event,
+        $response = $this->post(route('assignees.attach', ['event' => $event]), [
             'assignee' => $user,
-        ]));
+        ]);
 
         $response->assertRedirect(route('login'));
     }
@@ -38,10 +37,9 @@ class AddAssigneeTest extends TestCase
 
         Auth::login($event->user);
 
-        $response = $this->post(route('assignees.add', [
-            'event' => $event,
+        $response = $this->post(route('assignees.attach', ['event' => $event]), [
             'assignee' => $user,
-        ]));
+        ]);
 
         $response->assertForbidden();
     }
@@ -57,14 +55,14 @@ class AddAssigneeTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->post(route('assignees.add', [
-            'event' => $event,
+        $response = $this->post(route('assignees.attach', ['event' => $event]), [
             'assignee' => $user->members->first()->id,
-        ]));
+        ]);
+
         $response->assertRedirect(route('events.view', ['event' => $event]));
     }
 
-    public function test_cannot_add_to_other_users_events()
+    public function test_cannot_attach_to_other_users_events()
     {
         $other = User::factory()->hasEvents()->create();
 
@@ -74,15 +72,15 @@ class AddAssigneeTest extends TestCase
         ]);
 
         Auth::login($user);
+        $event = $other->events->first();
 
-        $response = $this->post(route('assignees.add', [
-            'event' => $other->events->first(),
+        $response = $this->post(route('assignees.attach', ['event' => $event]), [
             'assignee' => $user,
-        ]));
+        ]);
         $response->assertForbidden();
     }
 
-    public function test_cannot_add_user_that_is_not_member()
+    public function test_cannot_attach_user_that_is_not_member()
     {
         $user = User::factory()->hasEvents()->create();
         $user->role = Role::factory()->for($user)->create([
@@ -90,15 +88,18 @@ class AddAssigneeTest extends TestCase
         ]);
 
         Auth::login($user);
+        $event = $user->events->first();
 
-        $response = $this->post(route('assignees.add', [
-            'event' => $user->events->first(),
+        $response = $this->post(route('assignees.attach', ['event' => $event]), [
             'assignee' => User::factory()->create()->id,
-        ]));
-        $response->assertForbidden();
+        ]);
+
+        $response->assertInvalid([
+            'assignee' => 'The selected assignee is invalid.',
+        ]);
     }
 
-    public function test_member_can_add_to_parents_events()
+    public function test_member_can_attach_to_parents_events()
     {
         $parent = User::factory()->hasMembers()->hasEvents()->create();
 
@@ -110,16 +111,15 @@ class AddAssigneeTest extends TestCase
         Auth::login($user);
 
         $event = $parent->events->first();
-        $response = $this->post(route('assignees.add', [
-            'event' => $event->id,
+        $response = $this->post(route('assignees.attach', ['event' => $event]), [
             'assignee' => $parent->members->first()->id,
-        ]));
+        ]);
 
         $response->assertRedirect(route('events.view', ['event' => $event->id]));
         $this->assertTrue($event->refresh()->assignees->contains($parent->members->first()));
     }
 
-    public function test_adds_successfully()
+    public function test_attachs_successfully()
     {
         $user = User::factory()->hasMembers()->hasEvents()->create();
         $user->role = Role::factory()->for($user)->create([
@@ -129,17 +129,15 @@ class AddAssigneeTest extends TestCase
         Auth::login($user);
 
         $event = $user->events->first();
-
-        $response = $this->post(route('assignees.add', [
-            'event' => $event->id,
+        $response = $this->post(route('assignees.attach', ['event' => $event]), [
             'assignee' => $user->members->first()->id,
-        ]));
+        ]);
 
         $response->assertRedirect(route('events.view', ['event' => $event->id]));
         $this->assertTrue($event->refresh()->assignees->contains($user->members->first()));
     }
 
-    public function test_cannot_add_other_users_members()
+    public function test_cannot_attach_other_users_members()
     {
         $other = User::factory()->hasMembers()->create();
 
@@ -150,11 +148,14 @@ class AddAssigneeTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->post(route('assignees.add', [
-            'event' => $user->events->first()->id,
+        $event = $user->events->first();
+        $response = $this->post(route('assignees.attach', ['event' => $event]), [
             'assignee' => $other->members->first()->id,
-        ]));
-        $response->assertForbidden();
+        ]);
+
+        $response->assertInvalid([
+            'assignee' => 'The selected assignee is invalid.',
+        ]);
     }
 
     public function test_cannot_assign_pending_member()
@@ -168,11 +169,14 @@ class AddAssigneeTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->post(route('assignees.add', [
-            'event' => $user->events->first()->id,
-            'assignee' => $member->id
-        ]));
-        $response->assertForbidden();
+        $event = $user->events->first();
+        $response = $this->post(route('assignees.attach', ['event' => $event]), [
+            'assignee' => $member->id,
+        ]);
+
+        $response->assertInvalid([
+            'assignee' => 'The selected assignee is invalid.',
+        ]);
     }
 
     public function test_ignores_duplicated_assignee()
@@ -188,10 +192,9 @@ class AddAssigneeTest extends TestCase
         $member = $user->members->first();
         $event->assignees()->attach($member);
 
-        $response = $this->post(route('assignees.add', [
-            'event' => $event->id,
+        $response = $this->post(route('assignees.attach', ['event' => $event]), [
             'assignee' => $member->id,
-        ]));
+        ]);
 
         $this->assertCount(1, $event->refresh()->assignees);
         $this->assertTrue($event->refresh()->assignees->contains($member));

@@ -20,12 +20,11 @@ class AddCategoryTest extends TestCase
         $category = SupplierCategory::factory()->create();
         $event = Event::factory()->forUser()->create();
 
-        $route = route('categories.attach', [
-            'event' => $event,
-            'category' => $category
+        $response = $this->post(route('categories.attach', ['event' => $event]), [
+            'budget' => 13490,
+            'category' => $category->id,
         ]);
 
-        $response = $this->post($route, ['budget' => 13490]);
         $response->assertRedirect(route('login'));
     }
 
@@ -40,12 +39,11 @@ class AddCategoryTest extends TestCase
 
         Auth::login($event->user);
 
-        $route = route('categories.attach', [
-            'event' => $event,
-            'category' => $category
+        $response = $this->post(route('categories.attach', ['event' => $event]), [
+            'budget' => 13490,
+            'category' => $category->id,
         ]);
 
-        $response = $this->post($route, ['budget' => 24569]);
         $response->assertForbidden();
     }
 
@@ -60,12 +58,11 @@ class AddCategoryTest extends TestCase
 
         Auth::login($event->user);
 
-        $route = route('categories.attach', [
-            'event' => $event,
-            'category' => $category
+        $response = $this->post(route('categories.attach', ['event' => $event]), [
+            'budget' => 13490,
+            'category' => $category->id,
         ]);
 
-        $response = $this->post($route, ['budget' => 4569]);
         $response->assertRedirect(route('events.view', ['event' => $event]));
     }
 
@@ -79,12 +76,11 @@ class AddCategoryTest extends TestCase
 
         Auth::login($user);
 
-        $route = route('categories.attach', [
-            'event' => $event,
-            'category' => $category
+        $response = $this->post(route('categories.attach', ['event' => $event]), [
+            'budget' => 13490,
+            'category' => $category->id,
         ]);
 
-        $response = $this->post($route, ['budget' => 4561]);
         $response->assertForbidden();
     }
 
@@ -98,11 +94,10 @@ class AddCategoryTest extends TestCase
 
         Auth::login($user);
 
-        $route = route('categories.attach', [
-            'event' => $event,
-            'category' => $category
+        $response = $this->post(route('categories.attach', ['event' => $event]), [
+            'budget' => 13490,
+            'category' => $category->id,
         ]);
-        $response = $this->post($route, ['budget' => 3450]);
 
         $response->assertRedirect(route('events.view', ['event' => $event]));
         $this->assertTrue($event->refresh()->categories->contains($category));
@@ -119,12 +114,10 @@ class AddCategoryTest extends TestCase
 
         Auth::login($event->user);
 
-        $route = route('categories.attach', [
-            'event' => $event,
-            'category' => $category
+        $response = $this->post(route('categories.attach', ['event' => $event]), [
+            'budget' => 13490,
+            'category' => $category->id,
         ]);
-
-        $response = $this->post($route, ['budget' => 1305]);
 
         $this->assertCount(1, $event->refresh()->categories->all());
         $this->assertTrue($event->refresh()->categories->contains($category));
@@ -133,7 +126,6 @@ class AddCategoryTest extends TestCase
 
     public function test_validation()
     {
-        $category = SupplierCategory::factory()->create();
         $event = Event::factory()->forUser()->create();
 
         $event->user->role = Role::factory()->for($event->user)->create([
@@ -142,13 +134,13 @@ class AddCategoryTest extends TestCase
 
         Auth::login($event->user);
 
-        $route = route('categories.attach', [
-            'event' => $event,
-            'category' => $category
+        $response = $this->post(route('categories.attach', ['event' => $event]), [
+            'budget' => '1235,33',
+            'category' => 1950,
         ]);
-        $response = $this->post($route, ['budget' => '12345,33']);
 
         $response->assertInvalid([
+            'category' => 'The selected category is invalid.',
             'budget' => 'The budget must be a number.',
         ]);
     }

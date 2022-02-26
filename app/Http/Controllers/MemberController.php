@@ -84,7 +84,7 @@ class MemberController extends Controller
             'email' => ['required', 'email'],
             'role_id' => [
                 'required',
-                Rule::exists('roles', 'id')->where('user_id', $user->captain?->id || $user->id),
+                Rule::exists('App\Models\Role', 'id')->whereIn('user_id', [$user->id, $user->captain?->id]),
             ],
         ]);
 
@@ -107,7 +107,7 @@ class MemberController extends Controller
             'name' => ['required'],
             'role_id' => [
                 'required',
-                Rule::exists('roles', 'id')->where('user_id', $user->captain?->id || $user->id),
+                Rule::exists('App\Models\Role', 'id')->whereIn('user_id', [$user->id, $user->captain?->id]),
             ],
         ]);
 

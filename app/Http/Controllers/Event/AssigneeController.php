@@ -7,19 +7,25 @@ use App\Models\Event;
 use App\Models\User;
 use App\Models\Permission;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class AssigneeController extends Controller
 {
-    public function attach(Request $request, Event $event, User $assignee)
+    public function attach(Request $request, Event $event)
     {
         $this->authorize(Permission::EDIT_EVENT->value, $event);
 
-        if (!$request->user()->members->contains($assignee) || !$assignee->hasVerifiedEmail()) {
-            return abort(403, 'Assignee is not a member or has not confirmed the invitation');
-        }
+        $user = $request->user();
 
-        if (!$event->assignees->contains($assignee)) {
-            $event->assignees()->attach($assignee);
+        $validated = $request->validate([
+            'assignee' => [
+                'required',
+                Rule::exists('App\Models\User', 'id')->whereIn('captain_id', [$user->id, $user->captain?->id])->whereNotNull('email_verified_at')
+            ],
+        ]);
+
+        if (!$event->assignees->contains($validated['assignee'])) {
+            $event->assignees()->attach($validated['assignee']);
         }
 
         return redirect()->route('events.view', ['event' => $event]);

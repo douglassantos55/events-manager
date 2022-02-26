@@ -101,23 +101,49 @@
                 <div class="d-flex justify--space-between align--center">
                     <h2 class="display-3">Suppliers</h2>
 
-                    <va-button-dropdown icon="add" size="small">
-                        <va-list fit class="py-0">
-                            <va-list-item href="#" v-for="cat in categories" :key="cat.id" @click="addCategory(cat.id)">
-                                <va-list-item-section>
-                                    <va-list-item-label>
-                                        {{ cat.name }}
-                                    </va-list-item-label>
-                                </va-list-item-section>
-                            </va-list-item>
-                        </va-list>
-                    </va-button-dropdown>
+                    <va-button icon="add" size="small" @click="showCategoryModal = !showCategoryModal" />
+
+                    <va-modal v-model="showCategoryModal" size="small" title="Add category" hide-default-actions>
+                        <form @submit.prevent="addCategory">
+                            <va-select
+                                v-model="categoryForm.category"
+                                :options="categories"
+                                text-by="name"
+                                value-by="id"
+                                label="Category"
+                                class="mb-4"
+                                :error="!!categoryForm.errors.category"
+                                :error-messages="categoryForm.errors.category"
+                            />
+
+                            <va-input
+                                v-model="categoryForm.budget"
+                                label="Budget"
+                                class="mb-4"
+                                :error="!!categoryForm.errors.budget"
+                                :error-messages="categoryForm.errors.budget"
+                            />
+
+                            <va-button type="submit" :loading="categoryForm.processing">
+                                Add category
+                            </va-button>
+                        </form>
+                    </va-modal>
                 </div>
 
-                <va-list fit>
+                <va-list>
                     <va-list-item v-for="cat in event.categories" :key="cat.id">
                         <va-list-item-section>
-                            {{ cat.name }} - {{ cat.pivot.budget }}
+                            <va-list-item-label>
+                                {{ cat.name }} - {{ cat.pivot.budget }}
+                            </va-list-item-label>
+                        </va-list-item-section>
+
+                        <va-list-item-section>
+                            <va-list-item-label>
+                                <va-button icon="add" color="success" size="small" class="mr-2" />
+                                <va-button icon="delete" color="danger" size="small" />
+                            </va-list-item-label>
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
@@ -129,7 +155,7 @@
 <script>
 import { ref, computed } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
-import { Link } from '@inertiajs/inertia-vue3'
+import { Link, useForm } from '@inertiajs/inertia-vue3'
 
 export default {
     props: ['event', 'members', 'categories'],
@@ -138,6 +164,12 @@ export default {
     },
     setup(props) {
         const tab = ref('Dashboard')
+        const showCategoryModal = ref(false)
+
+        const categoryForm = useForm({
+            category: '',
+            budget: '',
+        })
 
         function remove(assignee) {
             Inertia.delete(route('assignees.remove', {
@@ -147,24 +179,23 @@ export default {
         }
 
         function assign(assignee) {
-            Inertia.post(route('assignees.add', {
+            Inertia.post(route('assignees.attach', props.event.id), {
                 assignee,
-                event: props.event.id
-            }));
+            });
         }
 
-        function addCategory(category) {
-            Inertia.post(route('categories.attach', {
-                category,
-                event: props.event.id,
-            }), { budget: 1000 });
+        function addCategory() {
+            categoryForm.clearErrors();
+            categoryForm.post(route('categories.attach', props.event.id), {
+                onSuccess: () => (showCategoryModal.value = false)
+            })
         }
 
         const assignableMembers = computed(() => props.members.filter(member => {
             return !props.event.assignees.find(assignee => assignee.id === member.id)
         }));
 
-        return { tab, remove, assign, addCategory, assignableMembers }
+        return { tab, remove, assign, categoryForm, addCategory, assignableMembers, showCategoryModal }
     },
 }
 </script>
