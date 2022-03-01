@@ -137,16 +137,47 @@
                             <va-list-item-label>
                                 {{ cat.name }} - {{ cat.pivot.budget }}
                             </va-list-item-label>
+
+                            <va-list-item-label v-for="sup in event.suppliers" :key="sup.id">
+                                {{ sup.name }}
+                            </va-list-item-label>
                         </va-list-item-section>
 
                         <va-list-item-section>
                             <va-list-item-label>
-                                <va-button icon="add" color="success" size="small" class="mr-2" />
+                                <va-button icon="add" color="success" size="small" class="mr-2" @click="showSupplierModal = true" />
                                 <va-button icon="delete" color="danger" size="small" @click="removeCategory(cat.id)" />
                             </va-list-item-label>
                         </va-list-item-section>
                     </va-list-item>
                 </va-list>
+
+                <va-modal v-model="showSupplierModal" size="small" title="Add supplier" hide-default-actions>
+                    <form @submit.prevent="addSupplier">
+                        <va-select
+                            v-model="supplierForm.supplier"
+                            :options="suppliers"
+                            text-by="name"
+                            value-by="id"
+                            label="Supplier"
+                            class="mb-4"
+                            :error="!!supplierForm.errors.supplier"
+                            :error-messages="supplierForm.errors.supplier"
+                        />
+
+                        <va-input
+                            v-model="supplierForm.value"
+                            label="Value"
+                            class="mb-4"
+                            :error="!!supplierForm.errors.value"
+                            :error-messages="supplierForm.errors.value"
+                        />
+
+                        <va-button type="submit" :loading="supplierForm.processing">
+                            Add supplier
+                        </va-button>
+                    </form>
+                </va-modal>
             </div>
         </div>
     </div>
@@ -158,18 +189,25 @@ import { Inertia } from '@inertiajs/inertia'
 import { Link, useForm } from '@inertiajs/inertia-vue3'
 
 export default {
-    props: ['event', 'members', 'categories'],
+    props: ['event', 'members', 'suppliers', 'categories'],
     components: {
         Link,
     },
     setup(props) {
         const tab = ref('Dashboard')
         const showCategoryModal = ref(false)
+        const showSupplierModal = ref(false)
 
         const categoryForm = useForm({
             category: '',
             budget: '',
         })
+
+        const supplierForm = useForm({
+            supplier: '',
+            value: '',
+        })
+
 
         function remove(assignee) {
             Inertia.delete(route('assignees.remove', {
@@ -198,11 +236,30 @@ export default {
             }));
         }
 
+        function addSupplier() {
+            supplierForm.clearErrors();
+            supplierForm.post(route('suppliers.attach', props.event.id), {
+                onSuccess: () => (showSupplierModal.value = false)
+            })
+        }
+
         const assignableMembers = computed(() => props.members.filter(member => {
             return !props.event.assignees.find(assignee => assignee.id === member.id)
         }));
 
-        return { tab, remove, assign, categoryForm, addCategory, removeCategory, assignableMembers, showCategoryModal }
+        return {
+            tab,
+            remove,
+            assign,
+            categoryForm,
+            supplierForm,
+            addCategory,
+            removeCategory,
+            addSupplier,
+            assignableMembers,
+            showSupplierModal,
+            showCategoryModal
+        }
     },
 }
 </script>

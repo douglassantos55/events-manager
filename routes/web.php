@@ -7,6 +7,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\Event\AssigneeController;
 use App\Http\Controllers\Event\CategoryController;
+use App\Http\Controllers\Event\SupplierController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,10 @@ Route::prefix('/events')->group(function () {
     Route::controller(CategoryController::class)->middleware('auth')->group(function () {
         Route::post('/categories/{event}', 'attach')->name('categories.attach');
         Route::delete('/categories/{event}/{category}', 'detach')->name('categories.detach')->scopeBindings();
+    });
+
+    Route::controller(SupplierController::class)->middleware('auth')->group(function () {
+        Route::post('/suppliers/{event}', 'attach')->name('suppliers.attach');
     });
 });
 

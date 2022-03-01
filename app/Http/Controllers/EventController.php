@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\Permission;
+use App\Models\Supplier;
 use App\Models\SupplierCategory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -30,6 +31,7 @@ class EventController extends Controller
         return inertia('Event/View', [
             'event' => $event,
             'members' => $members,
+            'suppliers' => Supplier::all(),
             'categories' => SupplierCategory::all(),
         ]);
     }
