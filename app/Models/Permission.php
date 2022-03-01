@@ -22,5 +22,7 @@ enum Permission: string
     case DELETE_ROLE = 'delete-role';
 
     case ADD_CATEGORY = 'add-category';
+    case REMOVE_CATEGORY = 'remove-category';
+
     case ASSIGN_MEMBER = 'assign-member';
 }

@@ -142,7 +142,7 @@
                         <va-list-item-section>
                             <va-list-item-label>
                                 <va-button icon="add" color="success" size="small" class="mr-2" />
-                                <va-button icon="delete" color="danger" size="small" />
+                                <va-button icon="delete" color="danger" size="small" @click="removeCategory(cat.id)" />
                             </va-list-item-label>
                         </va-list-item-section>
                     </va-list-item>
@@ -191,11 +191,18 @@ export default {
             })
         }
 
+        function removeCategory(category) {
+            Inertia.delete(route('categories.detach', {
+                category,
+                event: props.event.id,
+            }));
+        }
+
         const assignableMembers = computed(() => props.members.filter(member => {
             return !props.event.assignees.find(assignee => assignee.id === member.id)
         }));
 
-        return { tab, remove, assign, categoryForm, addCategory, assignableMembers, showCategoryModal }
+        return { tab, remove, assign, categoryForm, addCategory, removeCategory, assignableMembers, showCategoryModal }
     },
 }
 </script>

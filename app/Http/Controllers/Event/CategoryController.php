@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Event;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Permission;
+use App\Models\SupplierCategory;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -21,6 +22,15 @@ class CategoryController extends Controller
         if (!$event->categories->contains($validated['category'])) {
             $event->categories()->attach($validated['category'], $request->only('budget'));
         }
+
+        return redirect()->route('events.view', ['event' => $event]);
+    }
+
+    public function detach(Event $event, SupplierCategory $category)
+    {
+        $this->authorize(Permission::REMOVE_CATEGORY->value, $event);
+
+        $event->categories()->detach($category);
 
         return redirect()->route('events.view', ['event' => $event]);
     }

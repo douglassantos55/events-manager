@@ -46,6 +46,7 @@ Route::prefix('/events')->group(function () {
 
     Route::controller(CategoryController::class)->middleware('auth')->group(function () {
         Route::post('/categories/{event}', 'attach')->name('categories.attach');
+        Route::delete('/categories/{event}/{category}', 'detach')->name('categories.detach')->scopeBindings();
     });
 });
 
