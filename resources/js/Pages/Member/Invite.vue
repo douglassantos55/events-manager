@@ -21,6 +21,7 @@
             :options="roles"
             text-by="name"
             value-by="id"
+            track-by="id"
             label="Role"
             class="mb-4"
             :error="!!form.errors.role_id"

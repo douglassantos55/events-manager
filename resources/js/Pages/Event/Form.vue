@@ -44,11 +44,12 @@
             v-model="form.users"
             value-by="id"
             text-by="name"
+            track-by="id"
             :options="users"
             :error="!!form.errors.users"
             :error-messages="form.errors.users"
-            multiple
             class="mb-4"
+            multiple
             v-if="!event"
         />
 

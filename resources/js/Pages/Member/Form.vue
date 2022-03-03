@@ -12,6 +12,7 @@
             label="Role"
             text-by="name"
             value-by="id"
+            track-by="id"
             :options="roles"
             v-model="form.role_id"
             class="mb-4"
