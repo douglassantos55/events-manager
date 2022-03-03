@@ -31,6 +31,7 @@ class CategoryController extends Controller
         $this->authorize(Permission::REMOVE_CATEGORY->value, $event);
 
         $event->categories()->detach($category);
+        $event->suppliers()->detach($event->getSuppliersFor($category->id));
 
         return redirect()->route('events.view', ['event' => $event]);
     }

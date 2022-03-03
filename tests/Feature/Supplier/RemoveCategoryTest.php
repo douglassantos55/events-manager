@@ -5,6 +5,7 @@ namespace Test\Feature\Supplier;
 use App\Models\Event;
 use App\Models\Permission;
 use App\Models\Role;
+use App\Models\Supplier;
 use App\Models\SupplierCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -162,5 +163,31 @@ class RemoveCategoryTest extends TestCase
 
         $this->assertFalse($event->refresh()->categories->contains($category));
         $response->assertRedirect(route('events.view', ['event' => $event]));
+    }
+
+    public function test_removes_attached_suppliers_for_category()
+    {
+        $user = User::factory()->create();
+        $event = Event::factory()->for($user)->create();
+
+        $category = SupplierCategory::factory()->hasSuppliers(4)->create();
+        $event->categories()->attach($category, ['budget' => 13569]);
+        $event->suppliers()->syncWithPivotValues($category->suppliers, ['value' => 100]);
+
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::REMOVE_CATEGORY],
+        ]);
+
+        Auth::login($user);
+
+        $response = $this->delete(route('categories.detach', [
+            'event' => $event->id,
+            'category' => $category->id,
+        ]));
+
+        $this->assertCount(0, $event->refresh()->suppliers->all());
+        $this->assertFalse($event->refresh()->categories->contains($category));
+        $response->assertRedirect(route('events.view', ['event' => $event]));
+
     }
 }
