@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\SupplierCategory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,6 +19,7 @@ class SupplierFactory extends Factory
     {
         return [
             'name' => $this->faker->word(),
+            'category_id' => SupplierCategory::factory()->create(),
         ];
     }
 }

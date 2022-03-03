@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Event;
 use App\Http\Controllers\Controller;
 use App\Models\Event;
 use App\Models\Permission;
+use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -25,6 +26,15 @@ class SupplierController extends Controller
         if (!$event->suppliers->contains($validated['supplier'])) {
             $event->suppliers()->attach($validated['supplier'], $request->except('supplier'));
         }
+
+        return redirect()->route('events.view', ['event' => $event]);
+    }
+
+    public function detach(Event $event, Supplier $supplier)
+    {
+        $this->authorize(Permission::REMOVE_SUPPLIER->value, $event);
+
+        $event->suppliers()->detach($supplier);
 
         return redirect()->route('events.view', ['event' => $event]);
     }

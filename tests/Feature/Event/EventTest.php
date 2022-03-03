@@ -33,9 +33,9 @@ class EventTest extends TestCase
     public function test_group_suppliers_by_category()
     {
         $event = Event::factory()->forUser()->create();
-        $event->suppliers()->attach(Supplier::factory()->forCategory()->create(), ['value' => 100]);
-        $event->suppliers()->attach(Supplier::factory()->forCategory()->create(), ['value' => 100]);
-        $event->suppliers()->attach(Supplier::factory()->forCategory()->create(), ['value' => 100]);
+        $event->suppliers()->attach(Supplier::factory()->create(), ['value' => 100]);
+        $event->suppliers()->attach(Supplier::factory()->create(), ['value' => 100]);
+        $event->suppliers()->attach(Supplier::factory()->create(), ['value' => 100]);
 
         $this->assertCount(1, $event->getSuppliersFor(1));
     }

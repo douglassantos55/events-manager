@@ -132,31 +132,20 @@
                 </div>
 
                 <va-list>
-                    <va-list-item v-for="cat in event.categories" :key="cat.id">
-                        <va-list-item-section>
-                            <va-list-item-label>
-                                {{ cat.name }} - {{ cat.pivot.budget }}
-                            </va-list-item-label>
-
-                            <va-list-item-label v-for="sup in event.suppliers" :key="sup.id">
-                                {{ sup.name }}
-                            </va-list-item-label>
-                        </va-list-item-section>
-
-                        <va-list-item-section>
-                            <va-list-item-label>
-                                <va-button icon="add" color="success" size="small" class="mr-2" @click="showSupplierModal = true" />
-                                <va-button icon="delete" color="danger" size="small" @click="removeCategory(cat.id)" />
-                            </va-list-item-label>
-                        </va-list-item-section>
-                    </va-list-item>
+                    <Category
+                        v-for="category in event.categories"
+                        :key="category.id"
+                        :category="category"
+                        :event="event"
+                        @add-supplier="openSupplierModal"
+                    />
                 </va-list>
 
                 <va-modal v-model="showSupplierModal" size="small" title="Add supplier" hide-default-actions>
                     <form @submit.prevent="addSupplier">
                         <va-select
                             v-model="supplierForm.supplier"
-                            :options="suppliers"
+                            :options="supplierOptions"
                             text-by="name"
                             value-by="id"
                             label="Supplier"
@@ -187,16 +176,19 @@
 import { ref, computed } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
 import { Link, useForm } from '@inertiajs/inertia-vue3'
+import Category from './Category.vue'
 
 export default {
     props: ['event', 'members', 'suppliers', 'categories'],
     components: {
         Link,
+        Category,
     },
     setup(props) {
         const tab = ref('Dashboard')
         const showCategoryModal = ref(false)
         const showSupplierModal = ref(false)
+        const supplierOptions = ref([])
 
         const categoryForm = useForm({
             category: '',
@@ -208,6 +200,12 @@ export default {
             value: '',
         })
 
+        function openSupplierModal(category) {
+            supplierOptions.value = props.suppliers.filter(supplier => {
+                return supplier.category_id == category
+            })
+            showSupplierModal.value = true
+        }
 
         function remove(assignee) {
             Inertia.delete(route('assignees.remove', {
@@ -229,13 +227,6 @@ export default {
             })
         }
 
-        function removeCategory(category) {
-            Inertia.delete(route('categories.detach', {
-                category,
-                event: props.event.id,
-            }));
-        }
-
         function addSupplier() {
             supplierForm.clearErrors();
             supplierForm.post(route('suppliers.attach', props.event.id), {
@@ -251,11 +242,12 @@ export default {
             tab,
             remove,
             assign,
+            openSupplierModal,
             categoryForm,
             supplierForm,
             addCategory,
-            removeCategory,
             addSupplier,
+            supplierOptions,
             assignableMembers,
             showSupplierModal,
             showCategoryModal

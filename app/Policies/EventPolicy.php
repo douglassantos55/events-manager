@@ -91,4 +91,16 @@ class EventPolicy
     {
         return in_array($event->user_id, [$user->id, $user->captain?->id]);
     }
+
+    /**
+     * Determine whether the user can remove suppliers from the event.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Event  $event
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function removeSupplier(User $user, Event $event)
+    {
+        return in_array($event->user_id, [$user->id, $user->captain?->id]);
+    }
 }

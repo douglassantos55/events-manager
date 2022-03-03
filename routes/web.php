@@ -52,6 +52,7 @@ Route::prefix('/events')->group(function () {
 
     Route::controller(SupplierController::class)->middleware('auth')->group(function () {
         Route::post('/suppliers/{event}', 'attach')->name('suppliers.attach');
+        Route::delete('/suppliers/{event}/{supplier}', 'detach')->name('suppliers.detach')->scopeBindings();
     });
 });
 
