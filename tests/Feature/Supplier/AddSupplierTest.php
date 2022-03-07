@@ -20,6 +20,7 @@ class AddSupplierTest extends TestCase
         $event = Event::factory()->forUser()->create();
         $response = $this->post(route('suppliers.attach', ['event' => $event]), [
             'value' => 4699,
+            'status' => 'pending',
         ]);
         $response->assertRedirect(route('login'));
     }
@@ -38,6 +39,7 @@ class AddSupplierTest extends TestCase
 
         $response = $this->post(route('suppliers.attach', ['event' => $event]), [
             'value' => 4699,
+            'status' => 'pending',
             'supplier' => $supplier->id,
         ]);
 
@@ -60,6 +62,7 @@ class AddSupplierTest extends TestCase
 
         $response = $this->post(route('suppliers.attach', ['event' => $event]), [
             'value' => 4699,
+            'status' => 'pending',
             'supplier' => $supplier->id,
         ]);
 
@@ -80,6 +83,7 @@ class AddSupplierTest extends TestCase
 
         $response = $this->post(route('suppliers.attach', ['event' => $event]), [
             'value' => 4699,
+            'status' => 'pending',
             'supplier' => $supplier->id,
         ]);
 
@@ -103,10 +107,37 @@ class AddSupplierTest extends TestCase
 
         $response = $this->post(route('suppliers.attach', ['event' => $event]), [
             'value' => 4699,
+            'status' => 'pending',
             'supplier' => $supplier->id,
         ]);
 
         $response->assertRedirect(route('events.view', ['event' => $event]));
+    }
+
+    public function test_validation()
+    {
+        $user = User::factory()->create();
+        $supplier = Supplier::factory()->forCategory()->create();
+
+        $event = Event::factory()->for($user)->create();
+        $event->categories()->attach($supplier->category, ['budget' => 465]);
+
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::ADD_SUPPLIER],
+        ]);
+
+        Auth::login($user);
+
+        $response = $this->post(route('suppliers.attach', ['event' => $event]), [
+            'value' => '69,99',
+            'status' => 'breathing',
+            'supplier' => $supplier->id,
+        ]);
+
+        $response->assertInvalid([
+            'value' => 'The value must be a number.',
+            'status' => 'The selected status is invalid.',
+        ]);
     }
 
     public function test_adds_successfully()
@@ -123,13 +154,15 @@ class AddSupplierTest extends TestCase
 
         Auth::login($user);
 
-
         $response = $this->post(route('suppliers.attach', ['event' => $event]), [
             'value' => 69,
+            'status' => 'hired',
             'supplier' => $supplier->id,
         ]);
 
         $this->assertTrue($event->refresh()->suppliers->contains($supplier));
+        $this->assertEquals('hired', $event->suppliers->first()->pivot->status);
+
         $response->assertRedirect(route('events.view', ['event' => $event]));
     }
 
@@ -150,6 +183,7 @@ class AddSupplierTest extends TestCase
 
         $response = $this->post(route('suppliers.attach', ['event' => $event]), [
             'value' => 69,
+            'status' => 'hired',
             'supplier' => $supplier->id,
         ]);
 
@@ -171,6 +205,7 @@ class AddSupplierTest extends TestCase
 
         $response = $this->post(route('suppliers.attach', ['event' => $event]), [
             'value' => 69,
+            'status' => 'hired',
             'supplier' => 69,
         ]);
 
@@ -193,6 +228,7 @@ class AddSupplierTest extends TestCase
 
         $response = $this->post(route('suppliers.attach', ['event' => $event]), [
             'value' => 69420,
+            'status' => 'hired',
             'supplier' => $supplier->id,
         ]);
 

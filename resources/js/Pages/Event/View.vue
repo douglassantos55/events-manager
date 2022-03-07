@@ -164,6 +164,15 @@
                             :error-messages="supplierForm.errors.value"
                         />
 
+                        <va-select
+                            v-model="supplierForm.status"
+                            :options="['pending', 'hired']"
+                            label="Status"
+                            class="mb-4"
+                            :error="!!supplierForm.errors.status"
+                            :error-messages="supplierForm.errors.status"
+                        />
+
                         <va-button type="submit" :loading="supplierForm.processing">
                             Add supplier
                         </va-button>
@@ -200,6 +209,7 @@ export default {
         const supplierForm = useForm({
             supplier: '',
             value: '',
+            status: 'pending',
         })
 
         function openSupplierModal(category) {

@@ -28,7 +28,7 @@
         <va-list-item v-for="supplier in suppliers" :key="supplier.id" v-else>
             <va-list-item-section>
                 <va-list-item-label>
-                    {{ supplier.name }} - {{ supplier.pivot.value }}
+                    {{ supplier.name }} - {{ supplier.pivot.value }} - {{ supplier.pivot.status }}
                 </va-list-item-label>
             </va-list-item-section>
 

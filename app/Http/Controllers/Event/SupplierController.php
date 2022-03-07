@@ -17,6 +17,10 @@ class SupplierController extends Controller
 
         $validated = $request->validate([
             'value' => ['required', 'numeric'],
+            'status' => [
+                'required',
+                Rule::in(['pending', 'hired']),
+            ],
             'supplier' => [
                 'required',
                 Rule::exists('App\Models\Supplier', 'id')->whereIn('category_id', $event->categories->pluck('id'))
