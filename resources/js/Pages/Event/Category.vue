@@ -8,7 +8,7 @@
 
         <va-list-item-section>
             <va-list-item-label>
-                <va-button icon="add" color="success" size="small" class="mr-2" @click="$emit('add-supplier', category.id)" />
+                <va-button icon="add" color="success" size="small" class="mr-2" @click="supplierModal.show" />
                 <va-button icon="delete" color="danger" size="small" @click="removeCategory" />
             </va-list-item-label>
         </va-list-item-section>
@@ -17,7 +17,7 @@
     <va-divider />
 
     <va-list class="pt-0">
-        <va-list-item v-if="suppliers.length == 0">
+        <va-list-item v-if="categorySuppliers.length == 0">
             <va-list-item-section>
                 <va-list-item-label class="text--secondary">
                     No suppliers registered for this category
@@ -25,7 +25,7 @@
             </va-list-item-section>
         </va-list-item>
 
-        <va-list-item v-for="supplier in suppliers" :key="supplier.id" v-else>
+        <va-list-item v-for="supplier in categorySuppliers" :key="supplier.id" v-else>
             <va-list-item-section>
                 <va-list-item-label>
                     {{ supplier.name }} - {{ supplier.pivot.value }} - {{ supplier.pivot.status }}
@@ -34,23 +34,52 @@
 
             <va-list-item-section>
                 <va-list-item-label>
+                    <va-button icon="edit" size="small" class="mr-2" @click="() => {selectedSupplier = supplier; supplierModal.show()}" />
                     <va-button icon="delete" color="danger" size="small" @click="removeSupplier(supplier.id)" />
                 </va-list-item-label>
             </va-list-item-section>
         </va-list-item>
     </va-list>
 
+    <supplier-modal
+        :event="event"
+        :category="category"
+        :suppliers="suppliers"
+        :supplier="selectedSupplier"
+        v-model="supplierModal.visible.value"
+    />
 </template>
 
 <script>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
+import SupplierModal from './SupplierModal.vue'
+
+function useModal(initialProps) {
+    const visible = ref(false)
+
+    function show(prop) {
+        visible.value = true
+    }
+
+    return { visible, show }
+}
 
 export default {
-    props: ['event', 'category'],
-    emits: ['add-supplier'],
+    props: ['event', 'category', 'suppliers'],
+    components: {
+        SupplierModal,
+    },
     setup(props) {
-        const suppliers = computed(() => {
+        const selectedSupplier = ref(null)
+
+        const supplierModal = useModal({
+            event: props.event,
+            category: props.category,
+            suppliers: props.suppliers,
+        })
+
+        const categorySuppliers = computed(() => {
             return props.event.suppliers.filter(supplier => supplier.category_id === props.category.id)
         })
 
@@ -68,7 +97,13 @@ export default {
             }));
         }
 
-        return { suppliers, removeCategory, removeSupplier }
+        return {
+            categorySuppliers,
+            removeCategory,
+            removeSupplier,
+            supplierModal,
+            selectedSupplier,
+        }
     }
 }
 </script>

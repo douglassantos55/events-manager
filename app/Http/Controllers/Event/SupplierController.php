@@ -42,4 +42,20 @@ class SupplierController extends Controller
 
         return redirect()->route('events.view', ['event' => $event]);
     }
+
+    public function update(Request $request, Event $event, Supplier $supplier)
+    {
+        $this->authorize(Permission::EDIT_SUPPLIER->value, $event);
+
+        $validated = $request->validate([
+            'value' => ['required', 'numeric'],
+            'status' => [
+                'required',
+                Rule::in(['pending', 'hired']),
+            ],
+        ]);
+
+        $event->suppliers()->updateExistingPivot($supplier, $validated);
+        return redirect()->route('events.view', ['event' => $event]);
+    }
 }

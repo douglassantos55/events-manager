@@ -138,46 +138,9 @@
                         :key="category.id"
                         :category="category"
                         :event="event"
-                        @add-supplier="openSupplierModal"
+                        :suppliers="suppliers"
                     />
                 </va-list>
-
-                <va-modal v-model="showSupplierModal" size="small" title="Add supplier" hide-default-actions>
-                    <form @submit.prevent="addSupplier">
-                        <va-select
-                            v-model="supplierForm.supplier"
-                            :options="supplierOptions"
-                            text-by="name"
-                            value-by="id"
-                            track-by="id"
-                            label="Supplier"
-                            class="mb-4"
-                            :error="!!supplierForm.errors.supplier"
-                            :error-messages="supplierForm.errors.supplier"
-                        />
-
-                        <va-input
-                            v-model="supplierForm.value"
-                            label="Value"
-                            class="mb-4"
-                            :error="!!supplierForm.errors.value"
-                            :error-messages="supplierForm.errors.value"
-                        />
-
-                        <va-select
-                            v-model="supplierForm.status"
-                            :options="['pending', 'hired']"
-                            label="Status"
-                            class="mb-4"
-                            :error="!!supplierForm.errors.status"
-                            :error-messages="supplierForm.errors.status"
-                        />
-
-                        <va-button type="submit" :loading="supplierForm.processing">
-                            Add supplier
-                        </va-button>
-                    </form>
-                </va-modal>
             </div>
         </div>
     </div>
@@ -198,26 +161,11 @@ export default {
     setup(props) {
         const tab = ref('Dashboard')
         const showCategoryModal = ref(false)
-        const showSupplierModal = ref(false)
-        const supplierOptions = ref([])
 
         const categoryForm = useForm({
             category: '',
             budget: '',
         })
-
-        const supplierForm = useForm({
-            supplier: '',
-            value: '',
-            status: 'pending',
-        })
-
-        function openSupplierModal(category) {
-            supplierOptions.value = props.suppliers.filter(supplier => {
-                return supplier.category_id == category
-            })
-            showSupplierModal.value = true
-        }
 
         function remove(assignee) {
             Inertia.delete(route('assignees.remove', {
@@ -239,13 +187,6 @@ export default {
             })
         }
 
-        function addSupplier() {
-            supplierForm.clearErrors();
-            supplierForm.post(route('suppliers.attach', props.event.id), {
-                onSuccess: () => (showSupplierModal.value = false)
-            })
-        }
-
         const assignableMembers = computed(() => props.members.filter(member => {
             return !props.event.assignees.find(assignee => assignee.id === member.id)
         }));
@@ -254,15 +195,10 @@ export default {
             tab,
             remove,
             assign,
-            openSupplierModal,
             categoryForm,
-            supplierForm,
             addCategory,
-            addSupplier,
-            supplierOptions,
             assignableMembers,
-            showSupplierModal,
-            showCategoryModal
+            showCategoryModal,
         }
     },
 }

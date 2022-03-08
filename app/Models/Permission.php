@@ -25,6 +25,7 @@ enum Permission: string
     case REMOVE_CATEGORY = 'remove-category';
 
     case ADD_SUPPLIER = 'add-supplier';
+    case EDIT_SUPPLIER = 'edit-supplier';
     case REMOVE_SUPPLIER = 'remove-supplier';
 
     case ASSIGN_MEMBER = 'assign-member';
