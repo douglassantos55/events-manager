@@ -47,15 +47,23 @@ class SupplierController extends Controller
     {
         $this->authorize(Permission::EDIT_SUPPLIER->value, $event);
 
-        $validated = $request->validate([
+        $request->validate([
             'value' => ['required', 'numeric'],
+            'contract.*' => ['sometimes', 'required_if:status,hired', 'file'],
             'status' => [
                 'required',
                 Rule::in(['pending', 'hired']),
             ],
         ]);
 
-        $event->suppliers()->updateExistingPivot($supplier, $validated);
+        $event->suppliers()->updateExistingPivot($supplier, $request->only(['value', 'status']));
+
+        if ($request->file('contract')) {
+            foreach ($request->file('contract') as $file) {
+                $file->store('contracts');
+            }
+        }
+
         return redirect()->route('events.view', ['event' => $event]);
     }
 }

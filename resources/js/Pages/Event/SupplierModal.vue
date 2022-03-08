@@ -1,5 +1,5 @@
 <template>
-    <va-modal :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" size="small" title="Add supplier" hide-default-actions>
+    <va-modal :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" title="Add supplier" hide-default-actions>
         <form @submit.prevent="submit">
             <va-select
                 v-model="form.supplier"
@@ -30,6 +30,17 @@
                 :error-messages="form.errors.status"
             />
 
+            <div v-if="form.status == 'hired'">
+                <p class="mb-2">Upload the contract related files</p>
+
+                <va-file-upload
+                    label="Contract"
+                    v-model="form.contract"
+                    :error="!!form.errors.contract"
+                    :error-messages="form.errors.contract"
+                />
+            </div>
+
             <va-button type="submit" :loading="form.processing">
                 Add supplier
             </va-button>
@@ -56,11 +67,14 @@ export default {
         const form = useForm({
             value: '',
             supplier: '',
+            _method: 'post',
             status: 'pending',
+            contract: [],
         })
 
         watchEffect(() => {
             if (props.supplier) {
+                form._method = 'put'
                 form.supplier = props.supplier.id
                 form.value = props.supplier.pivot.value
                 form.status = props.supplier.pivot.status
@@ -77,7 +91,8 @@ export default {
             form.clearErrors()
 
             if (props.supplier) {
-                form.put(route('suppliers.update', {
+
+                form.post(route('suppliers.update', {
                     event: props.event.id,
                     supplier: props.supplier.id
                 }), {

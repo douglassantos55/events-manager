@@ -8,7 +8,9 @@ use App\Models\Role;
 use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class EditSupplierTest extends TestCase
@@ -245,5 +247,37 @@ class EditSupplierTest extends TestCase
         $this->assertEquals('hired', $event->suppliers->last()->pivot->status);
 
         $response->assertRedirect(route('events.view', ['event' => $event]));
+    }
+
+    public function test_file_upload()
+    {
+        Storage::fake();
+
+        $user = User::factory()->create();
+        $event = Event::factory()->for($user)->hasAttached(Supplier::factory(5), ['value' => 456])->create();
+        $supplier = $event->suppliers->last();
+
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::EDIT_SUPPLIER],
+        ]);
+
+        Auth::login($user);
+
+        $files = [
+            UploadedFile::fake()->create('contract.pdf'),
+            UploadedFile::fake()->create('agreement.pdf'),
+        ];
+
+        $this->put(route('suppliers.update', [
+            'event' => $event->id,
+            'supplier' => $supplier->id,
+        ]), [
+            'value' => 69,
+            'status' => 'hired',
+            'contract' => $files,
+        ]);
+
+        Storage::assertExists('contracts/' . $files[0]->hashName());
+        Storage::assertExists('contracts/' . $files[1]->hashName());
     }
 }
