@@ -17,6 +17,11 @@ class EventCategory extends Model
 
     protected $table = 'events_categories';
 
+    protected $with = [
+        'category',
+        'suppliers',
+    ];
+
     protected $fillable = [
         'budget',
         'event_id',

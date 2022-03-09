@@ -2,7 +2,7 @@
     <va-list-item>
         <va-list-item-section>
             <va-list-item-label>
-                {{ category.name }} - {{ category.pivot.budget }}
+                {{ category.category.name }} - {{ category.budget }}
             </va-list-item-label>
         </va-list-item-section>
 
@@ -17,7 +17,7 @@
     <va-divider />
 
     <va-list class="pt-0">
-        <va-list-item v-if="categorySuppliers.length == 0">
+        <va-list-item v-if="category.suppliers.length == 0">
             <va-list-item-section>
                 <va-list-item-label class="text--secondary">
                     No suppliers registered for this category
@@ -25,10 +25,10 @@
             </va-list-item-section>
         </va-list-item>
 
-        <va-list-item v-for="supplier in categorySuppliers" :key="supplier.id" v-else>
+        <va-list-item v-for="supplier in category.suppliers" :key="supplier.id" v-else>
             <va-list-item-section>
                 <va-list-item-label>
-                    {{ supplier.name }} - {{ supplier.pivot.value }} - {{ supplier.pivot.status }}
+                    {{ supplier.supplier.name }} - {{ supplier.value }} - {{ supplier.status }}
                 </va-list-item-label>
             </va-list-item-section>
 
@@ -79,10 +79,6 @@ export default {
             suppliers: props.suppliers,
         })
 
-        const categorySuppliers = computed(() => {
-            return props.event.suppliers.filter(supplier => supplier.category_id === props.category.id)
-        })
-
         function removeCategory() {
             Inertia.delete(route('categories.detach', {
                 event: props.event.id,
@@ -93,12 +89,11 @@ export default {
         function removeSupplier(supplier) {
             Inertia.delete(route('suppliers.detach', {
                 event: props.event.id,
-                supplier: supplier,
+                supplier_id: supplier,
             }));
         }
 
         return {
-            categorySuppliers,
             removeCategory,
             removeSupplier,
             supplierModal,

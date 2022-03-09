@@ -13,6 +13,10 @@ class EventSupplier extends Model
 
     protected $table = 'events_suppliers';
 
+    protected $with = [
+        'supplier',
+    ];
+
     protected $fillable = [
         'value',
         'status',
@@ -22,5 +26,10 @@ class EventSupplier extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(EventCategory::class);
+    }
+
+    public function supplier(): BelongsTo
+    {
+        return $this->belongsTo(Supplier::class);
     }
 }

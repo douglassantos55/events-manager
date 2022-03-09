@@ -2,15 +2,15 @@
     <va-modal :model-value="modelValue" @update:model-value="$emit('update:modelValue', $event)" title="Add supplier" hide-default-actions>
         <form @submit.prevent="submit">
             <va-select
-                v-model="form.supplier"
+                v-model="form.supplier_id"
                 :options="suppliers"
                 text-by="name"
                 value-by="id"
                 track-by="id"
                 label="Supplier"
                 class="mb-4"
-                :error="!!form.errors.supplier"
-                :error-messages="form.errors.supplier"
+                :error="!!form.errors.supplier_id"
+                :error-messages="form.errors.supplier_id"
             />
 
             <va-input
@@ -66,7 +66,7 @@ export default {
     setup(props, { emit }) {
         const form = useForm({
             value: '',
-            supplier: '',
+            supplier_id: '',
             _method: 'post',
             status: 'pending',
             contract: [],
@@ -75,17 +75,17 @@ export default {
         watchEffect(() => {
             if (props.supplier) {
                 form._method = 'put'
-                form.supplier = props.supplier.id
-                form.value = props.supplier.pivot.value
-                form.status = props.supplier.pivot.status
+                form.supplier_id = props.supplier.supplier_id
+                form.value = props.supplier.value
+                form.status = props.supplier.status
             }
         })
 
         const suppliers = computed(() => {
             return props.suppliers.filter(supplier => {
-                return supplier.category_id == props.category.id
+                return supplier.category_id == props.category.category_id
             })
-        })
+        });
 
         function submit() {
             form.clearErrors()
@@ -94,13 +94,17 @@ export default {
 
                 form.post(route('suppliers.update', {
                     event: props.event.id,
-                    supplier: props.supplier.id
+                    category: props.category.id,
+                    supplier: props.supplier.id,
                 }), {
                     preserveScroll: true,
                     onSuccess: () => emit('update:modelValue', false)
                 })
             } else {
-                form.post(route('suppliers.attach', props.event.id), {
+                form.post(route('suppliers.attach', {
+                    event: props.event.id,
+                    category: props.category.id,
+                }), {
                     preserveScroll: true,
                     onSuccess: () => emit('update:modelValue', false)
                 })
