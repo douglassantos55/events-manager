@@ -205,6 +205,8 @@ class AddSupplierTest extends TestCase
             'supplier_id' => $supplier->id,
         ]);
 
+        $category->refresh();
+
         $this->assertEquals('hired', $category->suppliers->first()->status);
         $this->assertTrue($category->suppliers->contains('supplier_id', $supplier->id));
 
@@ -241,6 +243,8 @@ class AddSupplierTest extends TestCase
             'status' => 'hired',
             'supplier_id' => $supplier->id,
         ]);
+
+        $category->refresh();
 
         $this->assertCount(1, $category->suppliers->all());
         $this->assertTrue($category->suppliers->contains('supplier_id', $supplier->id));
