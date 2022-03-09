@@ -12,8 +12,6 @@ class EventCategory extends Model
 {
     use HasFactory;
 
-    public $incrementing = true;
-
     public $timestamps = false;
 
     protected $table = 'events_categories';

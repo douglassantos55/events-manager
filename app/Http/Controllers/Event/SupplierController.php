@@ -8,6 +8,7 @@ use App\Models\EventCategory;
 use App\Models\EventSupplier;
 use App\Models\Permission;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Validation\Rule;
 
 class SupplierController extends Controller
@@ -61,8 +62,12 @@ class SupplierController extends Controller
         $supplier->update($request->only(['value', 'status']));
 
         if ($request->file('contract')) {
+            /** @var UploadedFile $file */
             foreach ($request->file('contract') as $file) {
-                $file->store('contracts');
+                if ($file->isValid()) {
+                    $path = $file->store('contracts');
+                    $supplier->files()->create(['path' => $path]);
+                }
             }
         }
 

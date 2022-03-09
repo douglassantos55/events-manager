@@ -309,8 +309,8 @@ class EditSupplierTest extends TestCase
         Auth::login($user);
 
         $files = [
-            UploadedFile::fake()->create('contract.pdf'),
-            UploadedFile::fake()->create('agreement.pdf'),
+            UploadedFile::fake()->create('contract.pdf', 100, 'application/pdf'),
+            UploadedFile::fake()->create('agreement.pdf', 150, 'application/pdf'),
         ];
 
         $this->put(route('suppliers.update', [
@@ -318,12 +318,16 @@ class EditSupplierTest extends TestCase
             'category' => $category->id,
             'supplier' => $supplier->id,
         ]), [
-            'value' => 69,
+            'value' => 42069,
             'status' => 'hired',
             'contract' => $files,
         ]);
 
+        $supplier->refresh();
+
         Storage::assertExists('contracts/' . $files[0]->hashName());
         Storage::assertExists('contracts/' . $files[1]->hashName());
+
+        $this->assertEquals(2, $supplier->files->count());
     }
 }

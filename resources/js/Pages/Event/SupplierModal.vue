@@ -39,6 +39,10 @@
                     :error="!!form.errors.contract"
                     :error-messages="form.errors.contract"
                 />
+
+                <p v-for="file in supplier.files" :key="file.id">
+                    {{ file.path }}
+                </p>
             </div>
 
             <va-button type="submit" :loading="form.processing">
