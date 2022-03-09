@@ -89,7 +89,8 @@ export default {
         function removeSupplier(supplier) {
             Inertia.delete(route('suppliers.detach', {
                 event: props.event.id,
-                supplier_id: supplier,
+                category: props.category.id,
+                supplier: supplier,
             }));
         }
 

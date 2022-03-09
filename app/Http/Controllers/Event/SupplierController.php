@@ -9,6 +9,7 @@ use App\Models\EventSupplier;
 use App\Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class SupplierController extends Controller
@@ -42,6 +43,7 @@ class SupplierController extends Controller
         $this->authorize(Permission::REMOVE_SUPPLIER->value, $event);
 
         $supplier->delete();
+        Storage::delete($supplier->files->pluck('path')->all());
 
         return redirect()->route('events.view', ['event' => $event]);
     }
