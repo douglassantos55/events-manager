@@ -16,6 +16,6 @@ class ContractFile extends Model
 
     public function supplier(): BelongsTo
     {
-        return $this->belongsTo(EventSupplier::class);
+        return $this->belongsTo(EventSupplier::class, 'event_supplier_id');
     }
 }

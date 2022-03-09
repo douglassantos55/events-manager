@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Event;
 
 use App\Http\Controllers\Controller;
+use App\Models\ContractFile;
 use App\Models\Event;
 use App\Models\EventCategory;
 use App\Models\EventSupplier;
@@ -74,5 +75,18 @@ class SupplierController extends Controller
         }
 
         return redirect()->route('events.view', ['event' => $event]);
+    }
+
+    public function removeFile(EventSupplier $supplier, ContractFile $file)
+    {
+        $event = $supplier->category->event;
+
+        $this->authorize(Permission::EDIT_SUPPLIER->value, $event);
+
+        if ($file->delete()) {
+            Storage::delete($file->path);
+        }
+
+        return redirect(route('events.view', ['event' => $event]));
     }
 }

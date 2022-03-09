@@ -30,7 +30,7 @@
                 :error-messages="form.errors.status"
             />
 
-            <div v-if="form.status == 'hired'">
+            <div v-if="supplier && form.status == 'hired'">
                 <p class="mb-2">Upload the contract related files</p>
 
                 <va-file-upload
