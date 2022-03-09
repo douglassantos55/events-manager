@@ -100,15 +100,18 @@ class AddCategoryTest extends TestCase
         ]);
 
         $response->assertRedirect(route('events.view', ['event' => $event]));
-        $this->assertTrue($event->refresh()->categories->contains($category));
+        $this->assertTrue($event->refresh()->categories->contains('category_id', $category->id));
     }
 
     public function test_ignores_duplicated_category()
     {
         $category = SupplierCategory::factory()->create();
-
         $event = Event::factory()->forUser()->create();
-        $event->categories()->attach($category, ['budget' => 430]);
+
+        $eventCategory = $event->categories()->create([
+            'category_id' => $category->id,
+            'budget' => 430
+        ]);
 
         $event->user->role = Role::factory()->for($event->user)->create();
 
@@ -120,7 +123,8 @@ class AddCategoryTest extends TestCase
         ]);
 
         $this->assertCount(1, $event->refresh()->categories->all());
-        $this->assertTrue($event->refresh()->categories->contains($category));
+        $this->assertTrue($event->refresh()->categories->contains($eventCategory));
+
         $response->assertRedirect(route('events.view', ['event' => $event]));
     }
 

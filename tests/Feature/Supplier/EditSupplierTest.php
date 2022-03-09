@@ -3,6 +3,7 @@
 namespace Test\Feature\Supplier;
 
 use App\Models\Event;
+use App\Models\EventCategory;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Supplier;
@@ -19,12 +20,16 @@ class EditSupplierTest extends TestCase
 
     public function test_needs_authentication()
     {
-        $event = Event::factory()->forUser()->hasAttached(Supplier::factory(), ['value' => 315])->create();
-        $supplier = $event->suppliers->first();
+        $event = Event::factory()->forUser()->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = $category->suppliers->first();
 
         $response = $this->put(route('suppliers.update', [
-            'event' => $event,
-            'supplier' => $supplier,
+            'event' => $event->id,
+            'category' => $category->id,
+            'supplier' => $supplier->id,
         ]), [
             'value' => 69,
             'status' => 'hired',
@@ -37,8 +42,11 @@ class EditSupplierTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $event = Event::factory()->for($user)->hasAttached(Supplier::factory(), ['value' => 315])->create();
-        $supplier = $event->suppliers->first();
+        $event = Event::factory()->for($user)->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = $category->suppliers->first();
 
         $user->role = Role::factory()->for($user)->create([
             'permissions' => [],
@@ -47,8 +55,9 @@ class EditSupplierTest extends TestCase
         Auth::login($user);
 
         $response = $this->put(route('suppliers.update', [
-            'event' => $event,
-            'supplier' => $supplier,
+            'event' => $event->id,
+            'category' => $category->id,
+            'supplier' => $supplier->id,
         ]), [
             'value' => 69,
             'status' => 'hired',
@@ -61,8 +70,11 @@ class EditSupplierTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $event = Event::factory()->for($user)->hasAttached(Supplier::factory(), ['value' => 315])->create();
-        $supplier = $event->suppliers->first();
+        $event = Event::factory()->for($user)->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = $category->suppliers->first();
 
         $user->role = Role::factory()->for($user)->create([
             'permissions' => [Permission::EDIT_SUPPLIER],
@@ -71,8 +83,9 @@ class EditSupplierTest extends TestCase
         Auth::login($user);
 
         $response = $this->put(route('suppliers.update', [
-            'event' => $event,
-            'supplier' => $supplier,
+            'event' => $event->id,
+            'category' => $category->id,
+            'supplier' => $supplier->id,
         ]), [
             'value' => 69,
             'status' => 'hired',
@@ -83,8 +96,11 @@ class EditSupplierTest extends TestCase
 
     public function test_cannot_edit_other_users_events_suppliers()
     {
-        $event = Event::factory()->forUser()->hasAttached(Supplier::factory(), ['value' => 315])->create();
-        $supplier = $event->suppliers->first();
+        $event = Event::factory()->forUser()->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = $category->suppliers->first();
 
         $user = User::factory()->create();
         $user->role = Role::factory()->for($user)->create([
@@ -94,8 +110,9 @@ class EditSupplierTest extends TestCase
         Auth::login($user);
 
         $response = $this->put(route('suppliers.update', [
-            'event' => $event,
-            'supplier' => $supplier,
+            'event' => $event->id,
+            'category' => $category->id,
+            'supplier' => $supplier->id,
         ]), [
             'value' => 69,
             'status' => 'hired',
@@ -109,6 +126,9 @@ class EditSupplierTest extends TestCase
         $user = User::factory()->create();
 
         $event = Event::factory()->for($user)->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
         $supplier = Supplier::factory()->forCategory()->create();
 
         $user->role = Role::factory()->for($user)->create([
@@ -118,8 +138,9 @@ class EditSupplierTest extends TestCase
         Auth::login($user);
 
         $response = $this->put(route('suppliers.update', [
-            'event' => $event,
-            'supplier' => $supplier,
+            'event' => $event->id,
+            'category' => $category->id,
+            'supplier' => $supplier->id,
         ]), [
             'value' => 69,
             'status' => 'hired',
@@ -132,8 +153,11 @@ class EditSupplierTest extends TestCase
     {
         $parent = User::factory()->create();
 
-        $event = Event::factory()->for($parent)->hasAttached(Supplier::factory(), ['value' => 456])->create();
-        $supplier = $event->suppliers->first();
+        $event = Event::factory()->for($parent)->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = $category->suppliers->first();
 
         $user = User::factory()->for($parent, 'captain')->create();
         $user->role = Role::factory()->for($user)->create([
@@ -143,8 +167,9 @@ class EditSupplierTest extends TestCase
         Auth::login($user);
 
         $response = $this->put(route('suppliers.update', [
-            'event' => $event,
-            'supplier' => $supplier,
+            'event' => $event->id,
+            'category' => $category->id,
+            'supplier' => $supplier->id,
         ]), [
             'value' => 69,
             'status' => 'hired',
@@ -164,6 +189,7 @@ class EditSupplierTest extends TestCase
 
         $response = $this->put(route('suppliers.update', [
             'event' => 535,
+            'category' => 539,
             'supplier' => 690,
         ]), [
             'value' => 69,
@@ -178,6 +204,11 @@ class EditSupplierTest extends TestCase
         $user = User::factory()->create();
         $event = Event::factory()->for($user)->create();
 
+        $event = Event::factory()->for($user)->create();
+        $categories = EventCategory::factory(3)->for($event)->create();
+
+        $category = $categories->first();
+
         $user->role = Role::factory()->for($user)->create([
             'permissions' => [Permission::EDIT_SUPPLIER],
         ]);
@@ -185,7 +216,8 @@ class EditSupplierTest extends TestCase
         Auth::login($user);
 
         $response = $this->put(route('suppliers.update', [
-            'event' => $event,
+            'event' => $event->id,
+            'category' => $category->id,
             'supplier' => 1350,
         ]), [
             'value' => 69,
@@ -198,8 +230,12 @@ class EditSupplierTest extends TestCase
     public function test_validation()
     {
         $user = User::factory()->create();
-        $event = Event::factory()->for($user)->hasAttached(Supplier::factory(), ['value' => 456])->create();
-        $supplier = $event->suppliers->first();
+
+        $event = Event::factory()->for($user)->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = $category->suppliers->first();
 
         $user->role = Role::factory()->for($user)->create([
             'permissions' => [Permission::EDIT_SUPPLIER],
@@ -209,6 +245,7 @@ class EditSupplierTest extends TestCase
 
         $response = $this->put(route('suppliers.update', [
             'event' => $event->id,
+            'category' => $category->id,
             'supplier' => $supplier->id,
         ]), [
             'value' => '69,99',
@@ -224,8 +261,12 @@ class EditSupplierTest extends TestCase
     public function test_updates_successfully()
     {
         $user = User::factory()->create();
-        $event = Event::factory()->for($user)->hasAttached(Supplier::factory(5), ['value' => 456])->create();
-        $supplier = $event->suppliers->last();
+
+        $event = Event::factory()->for($user)->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = $category->suppliers->last();
 
         $user->role = Role::factory()->for($user)->create([
             'permissions' => [Permission::EDIT_SUPPLIER],
@@ -235,16 +276,17 @@ class EditSupplierTest extends TestCase
 
         $response = $this->put(route('suppliers.update', [
             'event' => $event->id,
+            'category' => $category->id,
             'supplier' => $supplier->id,
         ]), [
             'value' => 69,
             'status' => 'hired',
         ]);
 
-        $event->refresh();
+        $category->refresh();
 
-        $this->assertEquals(69, $event->suppliers->last()->pivot->value);
-        $this->assertEquals('hired', $event->suppliers->last()->pivot->status);
+        $this->assertEquals(69, $category->suppliers->last()->value);
+        $this->assertEquals('hired', $category->suppliers->last()->status);
 
         $response->assertRedirect(route('events.view', ['event' => $event]));
     }
@@ -252,10 +294,13 @@ class EditSupplierTest extends TestCase
     public function test_file_upload()
     {
         Storage::fake();
-
         $user = User::factory()->create();
-        $event = Event::factory()->for($user)->hasAttached(Supplier::factory(5), ['value' => 456])->create();
-        $supplier = $event->suppliers->last();
+
+        $event = Event::factory()->for($user)->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = $category->suppliers->last();
 
         $user->role = Role::factory()->for($user)->create([
             'permissions' => [Permission::EDIT_SUPPLIER],
@@ -270,6 +315,7 @@ class EditSupplierTest extends TestCase
 
         $this->put(route('suppliers.update', [
             'event' => $event->id,
+            'category' => $category->id,
             'supplier' => $supplier->id,
         ]), [
             'value' => 69,

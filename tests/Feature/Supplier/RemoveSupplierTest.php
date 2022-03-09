@@ -3,6 +3,7 @@
 namespace Test\Feature\Supplier;
 
 use App\Models\Event;
+use App\Models\EventCategory;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\Supplier;
@@ -17,11 +18,15 @@ class RemoveSupplierTest extends TestCase
 
     public function test_needs_authentication()
     {
-        $event = Event::factory()->forUser()->hasAttached(Supplier::factory(5), ['value' => 123])->create();
-        $supplier = $event->suppliers->first();
+        $event = Event::factory()->forUser()->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = $category->suppliers->first();
 
         $response = $this->delete(route('suppliers.detach', [
             'event' => $event->id,
+            'category' => $category->id,
             'supplier' => $supplier->id,
         ]));
 
@@ -30,18 +35,22 @@ class RemoveSupplierTest extends TestCase
 
     public function test_needs_authorization()
     {
-        $event = Event::factory()->forUser()->hasAttached(Supplier::factory(5), ['value' => 123])->create();
-        $supplier = $event->suppliers->first();
-
         $user = User::factory()->create();
         $user->role = Role::factory()->for($user)->create([
             'permissions' => [],
         ]);
 
+        $event = Event::factory()->for($user)->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = $category->suppliers->first();
+
         Auth::login($user);
 
         $response = $this->delete(route('suppliers.detach', [
             'event' => $event->id,
+            'category' => $category->id,
             'supplier' => $supplier->id,
         ]));
 
@@ -55,13 +64,17 @@ class RemoveSupplierTest extends TestCase
             'permissions' => [Permission::REMOVE_SUPPLIER],
         ]);
 
-        $event = Event::factory()->for($user)->hasAttached(Supplier::factory(5), ['value' => 123])->create();
-        $supplier = $event->suppliers->first();
+        $event = Event::factory()->for($user)->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = $category->suppliers->first();
 
         Auth::login($user);
 
         $response = $this->delete(route('suppliers.detach', [
             'event' => $event->id,
+            'category' => $category->id,
             'supplier' => $supplier->id,
         ]));
 
@@ -70,8 +83,11 @@ class RemoveSupplierTest extends TestCase
 
     public function test_cannot_remove_from_others_events()
     {
-        $event = Event::factory()->forUser()->hasAttached(Supplier::factory(5), ['value' => 123])->create();
-        $supplier = $event->suppliers->first();
+        $event = Event::factory()->forUser()->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = $category->suppliers->first();
 
         $user = User::factory()->create();
         $user->role = Role::factory()->for($user)->create([
@@ -82,6 +98,7 @@ class RemoveSupplierTest extends TestCase
 
         $response = $this->delete(route('suppliers.detach', [
             'event' => $event->id,
+            'category' => $category->id,
             'supplier' => $supplier->id,
         ]));
 
@@ -92,8 +109,11 @@ class RemoveSupplierTest extends TestCase
     {
         $parent = User::factory()->create();
 
-        $event = Event::factory()->for($parent)->hasAttached(Supplier::factory(5), ['value' => 123])->create();
-        $supplier = $event->suppliers->first();
+        $event = Event::factory()->for($parent)->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = $category->suppliers->first();
 
         $user = User::factory()->for($parent, 'captain')->create();
         $user->role = Role::factory()->for($user)->create([
@@ -104,6 +124,7 @@ class RemoveSupplierTest extends TestCase
 
         $response = $this->delete(route('suppliers.detach', [
             'event' => $event->id,
+            'category' => $category->id,
             'supplier' => $supplier->id,
         ]));
 
@@ -117,16 +138,21 @@ class RemoveSupplierTest extends TestCase
             'permissions' => [Permission::REMOVE_SUPPLIER],
         ]);
 
-        $event = Event::factory()->for($user)->hasAttached(Supplier::factory(5), ['value' => 123])->create();
-        $other = Event::factory()->for($user)->hasAttached(Supplier::factory(5), ['value' => 123])->create();
+        $event = Event::factory()->for($user)->create();
+        $other = Event::factory()->for($user)->create();
 
-        $supplier = $other->suppliers->first();
+        EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+        $otherCategories = EventCategory::factory(3)->for($other)->hasSuppliers(3)->create();
+
+        $category = $otherCategories->first();
+        $otherSupplier = $category->suppliers->first();
 
         Auth::login($user);
 
         $response = $this->delete(route('suppliers.detach', [
             'event' => $event->id,
-            'supplier' => $supplier->id,
+            'category' => $category->id,
+            'supplier' => $otherSupplier->id,
         ]));
 
         $response->assertNotFound();
@@ -139,13 +165,17 @@ class RemoveSupplierTest extends TestCase
             'permissions' => [Permission::REMOVE_SUPPLIER],
         ]);
 
-        $event = Event::factory()->for($user)->hasAttached(Supplier::factory(5), ['value' => 123])->create();
-        $supplier = Supplier::factory()->create();
+        $event = Event::factory()->for($user)->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = Supplier::factory()->for($category->category, 'category')->create();
 
         Auth::login($user);
 
         $response = $this->delete(route('suppliers.detach', [
             'event' => $event->id,
+            'category' => $category->id,
             'supplier' => $supplier->id,
         ]));
 
@@ -156,8 +186,11 @@ class RemoveSupplierTest extends TestCase
     {
         $parent = User::factory()->create();
 
-        $event = Event::factory()->for($parent)->hasAttached(Supplier::factory(5), ['value' => 123])->create();
-        $supplier = $event->suppliers->first();
+        $event = Event::factory()->for($parent)->create();
+        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
+
+        $category = $categories->first();
+        $supplier = $category->suppliers->first();
 
         $user = User::factory()->for($parent, 'captain')->create();
         $user->role = Role::factory()->for($user)->create([
@@ -168,10 +201,11 @@ class RemoveSupplierTest extends TestCase
 
         $response = $this->delete(route('suppliers.detach', [
             'event' => $event->id,
+            'category' => $category->id,
             'supplier' => $supplier->id,
         ]));
 
-        $this->assertFalse($event->refresh()->suppliers->contains($supplier));
+        $this->assertFalse($category->refresh()->suppliers->contains('supplier_id', $supplier->id));
         $response->assertRedirect(route('events.view', ['event' => $event]));
     }
 }

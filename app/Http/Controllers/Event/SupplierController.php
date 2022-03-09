@@ -4,14 +4,15 @@ namespace App\Http\Controllers\Event;
 
 use App\Http\Controllers\Controller;
 use App\Models\Event;
+use App\Models\EventCategory;
+use App\Models\EventSupplier;
 use App\Models\Permission;
-use App\Models\Supplier;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class SupplierController extends Controller
 {
-    public function attach(Request $request, Event $event)
+    public function attach(Request $request, Event $event, EventCategory $category)
     {
         $this->authorize(Permission::ADD_SUPPLIER->value, $event);
 
@@ -21,29 +22,30 @@ class SupplierController extends Controller
                 'required',
                 Rule::in(['pending', 'hired']),
             ],
-            'supplier' => [
+            'supplier_id' => [
                 'required',
-                Rule::exists('App\Models\Supplier', 'id')->whereIn('category_id', $event->categories->pluck('id'))
+                Rule::exists('App\Models\Supplier', 'id')
+                    ->where('category_id', $category->category_id)
             ],
         ]);
 
-        if (!$event->suppliers->contains($validated['supplier'])) {
-            $event->suppliers()->attach($validated['supplier'], $request->except('supplier'));
+        if (!$category->suppliers->contains('supplier_id', $validated['supplier_id'])) {
+            $category->suppliers()->create($validated);
         }
 
         return redirect()->route('events.view', ['event' => $event]);
     }
 
-    public function detach(Event $event, Supplier $supplier)
+    public function detach(Event $event, EventCategory $category, EventSupplier $supplier)
     {
         $this->authorize(Permission::REMOVE_SUPPLIER->value, $event);
 
-        $event->suppliers()->detach($supplier);
+        $supplier->delete();
 
         return redirect()->route('events.view', ['event' => $event]);
     }
 
-    public function update(Request $request, Event $event, Supplier $supplier)
+    public function update(Request $request, Event $event, EventCategory $category, EventSupplier $supplier)
     {
         $this->authorize(Permission::EDIT_SUPPLIER->value, $event);
 
@@ -56,7 +58,7 @@ class SupplierController extends Controller
             ],
         ]);
 
-        $event->suppliers()->updateExistingPivot($supplier, $request->only(['value', 'status']));
+        $supplier->update($request->only(['value', 'status']));
 
         if ($request->file('contract')) {
             foreach ($request->file('contract') as $file) {

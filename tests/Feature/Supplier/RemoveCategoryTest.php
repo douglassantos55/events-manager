@@ -3,9 +3,9 @@
 namespace Test\Feature\Supplier;
 
 use App\Models\Event;
+use App\Models\EventSupplier;
 use App\Models\Permission;
 use App\Models\Role;
-use App\Models\Supplier;
 use App\Models\SupplierCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -21,11 +21,16 @@ class RemoveCategoryTest extends TestCase
         $event = Event::factory()->forUser()->create();
         $categories = SupplierCategory::factory(5)->create();
 
-        $event->categories()->syncWithPivotValues($categories, ['budget' => 13569]);
+        foreach ($categories as $category) {
+            $event->categories()->create([
+                'budget' => 1355,
+                'category_id' => $category->id,
+            ]);
+        }
 
         $response = $this->delete(route('categories.detach', [
             'event' => $event->id,
-            'category' => $categories->first()->id,
+            'category' => $event->categories->first()->id,
         ]));
 
         $response->assertRedirect(route('login'));
@@ -36,7 +41,12 @@ class RemoveCategoryTest extends TestCase
         $event = Event::factory()->forUser()->create();
         $categories = SupplierCategory::factory(5)->create();
 
-        $event->categories()->syncWithPivotValues($categories, ['budget' => 13569]);
+        foreach ($categories as $category) {
+            $event->categories()->create([
+                'budget' => 1355,
+                'category_id' => $category->id,
+            ]);
+        }
 
         $user = User::factory()->create();
         $user->role = Role::factory()->for($user)->create([
@@ -47,7 +57,7 @@ class RemoveCategoryTest extends TestCase
 
         $response = $this->delete(route('categories.detach', [
             'event' => $event->id,
-            'category' => $categories->first()->id,
+            'category' => $event->categories->first()->id,
         ]));
 
         $response->assertForbidden();
@@ -59,7 +69,12 @@ class RemoveCategoryTest extends TestCase
         $event = Event::factory()->for($user)->create();
         $categories = SupplierCategory::factory(5)->create();
 
-        $event->categories()->syncWithPivotValues($categories, ['budget' => 13569]);
+        foreach ($categories as $category) {
+            $event->categories()->create([
+                'budget' => 1355,
+                'category_id' => $category->id,
+            ]);
+        }
 
         $user->role = Role::factory()->for($user)->create([
             'permissions' => [Permission::REMOVE_CATEGORY],
@@ -69,7 +84,7 @@ class RemoveCategoryTest extends TestCase
 
         $response = $this->delete(route('categories.detach', [
             'event' => $event->id,
-            'category' => $categories->first()->id,
+            'category' => $event->categories->first()->id,
         ]));
 
         $response->assertRedirect(route('events.view', ['event' => $event]));
@@ -80,7 +95,12 @@ class RemoveCategoryTest extends TestCase
         $event = Event::factory()->forUser()->create();
         $categories = SupplierCategory::factory(5)->create();
 
-        $event->categories()->syncWithPivotValues($categories, ['budget' => 13569]);
+        foreach ($categories as $category) {
+            $event->categories()->create([
+                'budget' => 1355,
+                'category_id' => $category->id,
+            ]);
+        }
 
         $user = User::factory()->create();
         $user->role = Role::factory()->for($user)->create([
@@ -91,7 +111,7 @@ class RemoveCategoryTest extends TestCase
 
         $response = $this->delete(route('categories.detach', [
             'event' => $event->id,
-            'category' => $categories->first()->id,
+            'category' => $event->categories->first()->id,
         ]));
 
         $response->assertForbidden();
@@ -122,9 +142,14 @@ class RemoveCategoryTest extends TestCase
     {
         $parent = User::factory()->hasMembers()->create();
         $event = Event::factory()->for($parent)->create();
-
         $categories = SupplierCategory::factory(5)->create();
-        $event->categories()->syncWithPivotValues($categories, ['budget' => 13569]);
+
+        foreach ($categories as $category) {
+            $event->categories()->create([
+                'budget' => 1355,
+                'category_id' => $category->id,
+            ]);
+        }
 
         $user = User::factory()->for($parent, 'captain')->create();
         $user->role = Role::factory()->for($user)->create([
@@ -135,7 +160,7 @@ class RemoveCategoryTest extends TestCase
 
         $response = $this->delete(route('categories.detach', [
             'event' => $event->id,
-            'category' => $categories->first()->id,
+            'category' => $event->categories->first()->id,
         ]));
 
         $response->assertRedirect(route('events.view', ['event' => $event]));
@@ -147,14 +172,20 @@ class RemoveCategoryTest extends TestCase
         $event = Event::factory()->for($user)->create();
 
         $categories = SupplierCategory::factory(5)->create();
-        $event->categories()->syncWithPivotValues($categories, ['budget' => 13569]);
+
+        foreach ($categories as $category) {
+            $event->categories()->create([
+                'budget' => 1355,
+                'category_id' => $category->id,
+            ]);
+        }
 
         $user->role = Role::factory()->for($user)->create([
             'permissions' => [Permission::REMOVE_CATEGORY],
         ]);
 
         Auth::login($user);
-        $category = $categories->first();
+        $category = $event->categories->first();
 
         $response = $this->delete(route('categories.detach', [
             'event' => $event->id,
@@ -169,10 +200,19 @@ class RemoveCategoryTest extends TestCase
     {
         $user = User::factory()->create();
         $event = Event::factory()->for($user)->create();
-
         $category = SupplierCategory::factory()->hasSuppliers(4)->create();
-        $event->categories()->attach($category, ['budget' => 13569]);
-        $event->suppliers()->syncWithPivotValues($category->suppliers, ['value' => 100]);
+
+        $eventCategory = $event->categories()->create([
+            'category_id' => $category->id,
+            'budget' => 13569
+        ]);
+
+        foreach ($category->suppliers as $supplier) {
+            $eventCategory->suppliers()->create([
+                'supplier_id' => $supplier->id,
+                'value' => 69,
+            ]);
+        }
 
         $user->role = Role::factory()->for($user)->create([
             'permissions' => [Permission::REMOVE_CATEGORY],
@@ -185,7 +225,7 @@ class RemoveCategoryTest extends TestCase
             'category' => $category->id,
         ]));
 
-        $this->assertCount(0, $event->refresh()->suppliers->all());
+        $this->assertCount(0, EventSupplier::all());
         $this->assertFalse($event->refresh()->categories->contains($category));
         $response->assertRedirect(route('events.view', ['event' => $event]));
 

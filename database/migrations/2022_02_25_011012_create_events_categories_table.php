@@ -16,10 +16,10 @@ return new class extends Migration
     public function up()
     {
         Schema::create('events_categories', function (Blueprint $table) {
+            $table->id();
             $table->decimal('budget');
             $table->foreignIdFor(Event::class);
-            $table->foreignIdFor(SupplierCategory::class);
-            $table->primary(['event_id', 'supplier_category_id']);
+            $table->foreignIdFor(SupplierCategory::class, 'category_id');
         });
     }
 

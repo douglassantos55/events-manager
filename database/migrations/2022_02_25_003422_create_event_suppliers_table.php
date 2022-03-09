@@ -1,7 +1,7 @@
 <?php
 
-use App\Models\Event;
 use App\Models\Supplier;
+use App\Models\EventCategory;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -16,11 +16,11 @@ return new class extends Migration
     public function up()
     {
         Schema::create('events_suppliers', function (Blueprint $table) {
+            $table->id();
             $table->decimal('value');
             $table->string('status')->default('pending');
-            $table->foreignIdFor(Event::class);
             $table->foreignIdFor(Supplier::class);
-            $table->primary(['supplier_id', 'event_id']);
+            $table->foreignIdFor(EventCategory::class)->constrained('events_categories')->cascadeOnDelete();
         });
     }
 

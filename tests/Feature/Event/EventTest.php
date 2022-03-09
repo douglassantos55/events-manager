@@ -14,29 +14,32 @@ class EventTest extends TestCase
 
     public function test_add_category()
     {
-        $category = SupplierCategory::factory()->create();
         $event = Event::factory()->forUser()->create();
+        $category = SupplierCategory::factory()->create();
 
-        $event->categories()->attach($category, ['budget' => 1300]);
-        $this->assertTrue($event->categories->contains($category));
+        $eventCategory = $event->categories()->create([
+            'budget' => 355,
+            'category_id' => $category->id,
+        ]);
+
+        $this->assertTrue($event->categories->contains($eventCategory));
     }
 
     public function test_add_supplier()
     {
+        $event = Event::factory()->forUser()->create();
         $supplier = Supplier::factory()->forCategory()->create();
-        $event = Event::factory()->forUser()->create();
 
-        $event->suppliers()->attach($supplier, ['value' => 530]);
-        $this->assertTrue($event->suppliers->contains($supplier));
-    }
+        $eventCategory = $event->categories()->create([
+            'budget' => 355,
+            'category_id' => $supplier->category->id,
+        ]);
 
-    public function test_group_suppliers_by_category()
-    {
-        $event = Event::factory()->forUser()->create();
-        $event->suppliers()->attach(Supplier::factory()->create(), ['value' => 100]);
-        $event->suppliers()->attach(Supplier::factory()->create(), ['value' => 100]);
-        $event->suppliers()->attach(Supplier::factory()->create(), ['value' => 100]);
+        $eventSupplier = $eventCategory->suppliers()->create([
+            'value' => 1355,
+            'supplier_id' => $supplier->id,
+        ]);
 
-        $this->assertCount(1, $event->getSuppliersFor(1));
+        $this->assertTrue($eventCategory->suppliers->contains($eventSupplier));
     }
 }
