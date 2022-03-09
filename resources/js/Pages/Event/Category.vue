@@ -2,7 +2,7 @@
     <va-list-item>
         <va-list-item-section>
             <va-list-item-label>
-                {{ category.category.name }} - {{ category.budget }}
+                {{ category.name }} - {{ category.budget }}
             </va-list-item-label>
         </va-list-item-section>
 
@@ -28,7 +28,7 @@
         <va-list-item v-for="supplier in category.suppliers" :key="supplier.id" v-else>
             <va-list-item-section>
                 <va-list-item-label>
-                    {{ supplier.supplier.name }} - {{ supplier.value }} - {{ supplier.status }}
+                    {{ supplier.name }} - {{ supplier.value }} - {{ supplier.status }}
                 </va-list-item-label>
             </va-list-item-section>
 
@@ -44,7 +44,7 @@
     <supplier-modal
         :event="event"
         :category="category"
-        :suppliers="suppliers"
+        :suppliers="category.all_suppliers"
         :supplier="selectedSupplier"
         v-model="supplierModal.visible.value"
     />

@@ -20,7 +20,9 @@ class AssigneeController extends Controller
         $validated = $request->validate([
             'assignee' => [
                 'required',
-                Rule::exists('App\Models\User', 'id')->whereIn('captain_id', [$user->id, $user->captain?->id])->whereNotNull('email_verified_at')
+                Rule::exists('App\Models\User', 'id')
+                    ->whereIn('captain_id', [$user->id, $user->captain?->id])
+                    ->whereNotNull('email_verified_at')
             ],
         ]);
 

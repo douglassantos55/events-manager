@@ -26,12 +26,11 @@ class EventController extends Controller
         $this->authorize(Permission::VIEW_EVENT->value, $event);
 
         $event->loadMissing(['categories', 'assignees']);
-        $members = $request->user()->members()->whereNotNull('email_verified_at')->get();
+        $members = $request->user()->members()->active()->get();
 
         return inertia('Event/View', [
             'event' => $event,
             'members' => $members,
-            'suppliers' => Supplier::all(),
             'categories' => SupplierCategory::all(),
         ]);
     }

@@ -78,6 +78,11 @@ class User extends Authenticatable
         return $this->hasMany(User::class, 'captain_id');
     }
 
+    public function scopeActive($query)
+    {
+        return $query->whereNotNull('email_verified_at');
+    }
+
     public function plan(): Attribute
     {
         return new Attribute(

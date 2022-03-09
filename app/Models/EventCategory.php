@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -17,8 +18,8 @@ class EventCategory extends Model
 
     protected $table = 'events_categories';
 
+    // Eager loaded relationships
     protected $with = [
-        'category',
         'suppliers',
     ];
 
@@ -27,6 +28,31 @@ class EventCategory extends Model
         'event_id',
         'category_id',
     ];
+
+    // Custom attributes added to JSON
+    protected $appends = [
+        'name',
+        'all_suppliers',
+    ];
+
+    // Hidden from JSON
+    protected $hidden = [
+        'category',
+    ];
+
+    public function name(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->category->name
+        );
+    }
+
+    public function allSuppliers(): Attribute
+    {
+        return new Attribute(
+            get: fn () => $this->category->suppliers
+        );
+    }
 
     public function event(): BelongsTo
     {
