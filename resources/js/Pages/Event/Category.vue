@@ -80,18 +80,11 @@ export default {
         })
 
         function removeCategory() {
-            Inertia.delete(route('categories.detach', {
-                event: props.event.id,
-                category: props.category.id,
-            }));
+            Inertia.delete(route('categories.detach', props.category.id));
         }
 
         function removeSupplier(supplier) {
-            Inertia.delete(route('suppliers.detach', {
-                event: props.event.id,
-                category: props.category.id,
-                supplier: supplier,
-            }));
+            Inertia.delete(route('suppliers.detach', supplier));
         }
 
         return {

@@ -3,7 +3,7 @@
         <form @submit.prevent="submit">
             <va-select
                 v-model="form.supplier_id"
-                :options="suppliers"
+                :options="category.all_suppliers"
                 text-by="name"
                 value-by="id"
                 track-by="id"
@@ -42,6 +42,7 @@
 
                 <p v-for="file in supplier.files" :key="file.id">
                     {{ file.path }}
+                    <va-button size="small" color="danger" icon="delete" @click="removeFile(file.id)" />
                 </p>
             </div>
 
@@ -54,6 +55,7 @@
 
 <script>
 import { computed, watchEffect } from 'vue'
+import { Inertia } from '@inertiajs/inertia'
 import { useForm } from '@inertiajs/inertia-vue3'
 
 export default {
@@ -79,43 +81,35 @@ export default {
         watchEffect(() => {
             if (props.supplier) {
                 form._method = 'put'
-                form.supplier_id = props.supplier.supplier_id
                 form.value = props.supplier.value
                 form.status = props.supplier.status
+                form.supplier_id = props.supplier.supplier_id
             }
         })
-
-        const suppliers = computed(() => {
-            return props.suppliers.filter(supplier => {
-                return supplier.category_id == props.category.category_id
-            })
-        });
 
         function submit() {
             form.clearErrors()
 
             if (props.supplier) {
-
-                form.post(route('suppliers.update', {
-                    event: props.event.id,
-                    category: props.category.id,
-                    supplier: props.supplier.id,
-                }), {
+                form.post(route('suppliers.update', props.supplier.id), {
                     preserveScroll: true,
                     onSuccess: () => emit('update:modelValue', false)
                 })
             } else {
-                form.post(route('suppliers.attach', {
-                    event: props.event.id,
-                    category: props.category.id,
-                }), {
+                form.post(route('suppliers.attach', props.category.id), {
                     preserveScroll: true,
                     onSuccess: () => emit('update:modelValue', false)
                 })
             }
         }
 
-        return { form, submit, suppliers }
+        function removeFile(file) {
+            Inertia.delete(route('files.delete', file), {
+                onSuccess: () => emit('update:modelValue', false)
+            })
+        }
+
+        return { form, submit, removeFile }
     }
 }
 </script>
