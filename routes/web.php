@@ -52,7 +52,7 @@ Route::prefix('/events')->group(function () {
 
     Route::controller(SupplierController::class)->middleware('auth')->group(function () {
         Route::post('/suppliers/{event}/{category}', 'attach')->name('suppliers.attach');
-        Route::put('/suppliers/{event}/{category}/{supplier}', 'update')->name('suppliers.update')->scopeBindings();
+        Route::put('/suppliers/{supplier}', 'update')->name('suppliers.update')->scopeBindings();
         Route::delete('/suppliers/{event}/{category}/{supplier}', 'detach')->name('suppliers.detach')->scopeBindings();
 
         // Contract files

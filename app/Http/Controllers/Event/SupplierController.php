@@ -49,9 +49,9 @@ class SupplierController extends Controller
         return redirect()->route('events.view', ['event' => $event]);
     }
 
-    public function update(Request $request, Event $event, EventCategory $category, EventSupplier $supplier)
+    public function update(Request $request, EventSupplier $supplier)
     {
-        $this->authorize(Permission::EDIT_SUPPLIER->value, $event);
+        $this->authorize(Permission::EDIT_SUPPLIER->value, $supplier);
 
         $request->validate([
             'value' => ['required', 'numeric'],
@@ -74,7 +74,7 @@ class SupplierController extends Controller
             }
         }
 
-        return redirect()->route('events.view', ['event' => $event]);
+        return redirect()->route('events.view', ['event' => $supplier->category->event]);
     }
 
     public function removeFile(EventSupplier $supplier, ContractFile $file)

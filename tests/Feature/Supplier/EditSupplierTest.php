@@ -6,7 +6,6 @@ use App\Models\Event;
 use App\Models\EventCategory;
 use App\Models\Permission;
 use App\Models\Role;
-use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
@@ -26,11 +25,7 @@ class EditSupplierTest extends TestCase
         $category = $categories->first();
         $supplier = $category->suppliers->first();
 
-        $response = $this->put(route('suppliers.update', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]), [
+        $response = $this->put(route('suppliers.update', ['supplier' => $supplier->id]), [
             'value' => 69,
             'status' => 'hired',
         ]);
@@ -54,11 +49,7 @@ class EditSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->put(route('suppliers.update', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]), [
+        $response = $this->put(route('suppliers.update', ['supplier' => $supplier->id]), [
             'value' => 69,
             'status' => 'hired',
         ]);
@@ -82,11 +73,7 @@ class EditSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->put(route('suppliers.update', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]), [
+        $response = $this->put(route('suppliers.update', ['supplier' => $supplier->id]), [
             'value' => 69,
             'status' => 'hired',
         ]);
@@ -109,44 +96,12 @@ class EditSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->put(route('suppliers.update', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]), [
+        $response = $this->put(route('suppliers.update', ['supplier' => $supplier->id]), [
             'value' => 69,
             'status' => 'hired',
         ]);
 
         $response->assertForbidden();
-    }
-
-    public function test_cannot_edit_supplier_not_attached_to_event()
-    {
-        $user = User::factory()->create();
-
-        $event = Event::factory()->for($user)->create();
-        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
-
-        $category = $categories->first();
-        $supplier = Supplier::factory()->forCategory()->create();
-
-        $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
-        ]);
-
-        Auth::login($user);
-
-        $response = $this->put(route('suppliers.update', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]), [
-            'value' => 69,
-            'status' => 'hired',
-        ]);
-
-        $response->assertNotFound();
     }
 
     public function test_member_can_edit_parents_suppliers()
@@ -166,11 +121,7 @@ class EditSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->put(route('suppliers.update', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]), [
+        $response = $this->put(route('suppliers.update', ['supplier' => $supplier->id]), [
             'value' => 69,
             'status' => 'hired',
         ]);
@@ -178,48 +129,16 @@ class EditSupplierTest extends TestCase
         $response->assertRedirect(route('events.view', ['event' => $event]));
     }
 
-    public function test_cannot_edit_from_non_existing_event()
-    {
-        $user = User::factory()->create();
-        $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
-        ]);
-
-        Auth::login($user);
-
-        $response = $this->put(route('suppliers.update', [
-            'event' => 535,
-            'category' => 539,
-            'supplier' => 690,
-        ]), [
-            'value' => 69,
-            'status' => 'hired',
-        ]);
-
-        $response->assertNotFound();
-    }
-
     public function test_cannot_edit_non_existing_supplier()
     {
         $user = User::factory()->create();
-        $event = Event::factory()->for($user)->create();
-
-        $event = Event::factory()->for($user)->create();
-        $categories = EventCategory::factory(3)->for($event)->create();
-
-        $category = $categories->first();
-
         $user->role = Role::factory()->for($user)->create([
             'permissions' => [Permission::EDIT_SUPPLIER],
         ]);
 
         Auth::login($user);
 
-        $response = $this->put(route('suppliers.update', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => 1350,
-        ]), [
+        $response = $this->put(route('suppliers.update', ['supplier' => 1350]), [
             'value' => 69,
             'status' => 'hired',
         ]);
@@ -243,11 +162,7 @@ class EditSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->put(route('suppliers.update', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]), [
+        $response = $this->put(route('suppliers.update', ['supplier' => $supplier->id]), [
             'value' => '69,99',
             'status' => 'breathing',
         ]);
@@ -274,11 +189,7 @@ class EditSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->put(route('suppliers.update', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]), [
+        $response = $this->put(route('suppliers.update', ['supplier' => $supplier->id]), [
             'value' => 69,
             'status' => 'hired',
         ]);
@@ -313,11 +224,7 @@ class EditSupplierTest extends TestCase
             UploadedFile::fake()->create('agreement.pdf', 150, 'application/pdf'),
         ];
 
-        $this->put(route('suppliers.update', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]), [
+        $this->put(route('suppliers.update', ['supplier' => $supplier->id]), [
             'value' => 42069,
             'status' => 'hired',
             'contract' => $files,
