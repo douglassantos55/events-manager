@@ -31,7 +31,7 @@
             />
 
             <div v-if="supplier && form.status == 'hired'">
-                <p class="mb-2">Upload the contract related files</p>
+                <h5 class="mb-2">Upload the contract related files</h5>
 
                 <va-file-upload
                     label="Contract"
@@ -40,13 +40,45 @@
                     :error-messages="form.errors.contract"
                 />
 
-                <p v-for="file in supplier.files" :key="file.id">
+                <p v-for="file in supplier.files" :key="file.id" class="mb-1">
                     {{ file.path }}
                     <va-button size="small" color="danger" icon="delete" @click="removeFile(file.id)" />
                 </p>
+
+
+                <h5 class="mb-2 mt-4">Installments</h5>
+                <table class="va-table" style="width: 100%">
+                    <tr>
+                        <th>#</th>
+                        <th>Value</th>
+                        <th>Due Date</th>
+                        <th width="140">Status</th>
+                    </tr>
+
+                    <tr>
+                        <td>1</td>
+                        <td>$ 150.00</td>
+                        <td>04/15/21</td>
+                        <td><va-select :options="['pending', 'paid']" /></td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>$ 150.00</td>
+                        <td>05/15/21</td>
+                        <td><va-select :options="['pending', 'paid']" /></td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>$ 150.00</td>
+                        <td>06/15/21</td>
+                        <td><va-select :options="['pending', 'paid']" /></td>
+                    </tr>
+                </table>
+
+                <va-button>Add installment</va-button>
             </div>
 
-            <va-button type="submit" :loading="form.processing">
+            <va-button type="submit" :loading="form.processing" color="success" class="mt-4">
                 Add supplier
             </va-button>
         </form>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\ContractFile;
 use App\Models\EventCategory;
 use App\Models\EventSupplier;
+use App\Models\Installment;
 use App\Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -87,5 +88,27 @@ class SupplierController extends Controller
         }
 
         return redirect(route('events.view', ['event' => $event]));
+    }
+
+    public function createInstallment(Request $request, EventSupplier $supplier)
+    {
+        $this->authorize(Permission::EDIT_SUPPLIER->value, $supplier);
+
+        $request->validate([
+            'value' => ['required', 'numeric'],
+            'due_date' => ['required', 'date'],
+        ]);
+
+        $installment = Installment::make($request->all());
+
+        if (!$supplier->canCreateInstallment($installment)) {
+            return back()->withErrors([
+                'value' => 'The sum of installments exceeds the value hired.',
+            ]);
+        }
+
+        $supplier->installments()->save($installment);
+
+        return redirect()->route('events.view', ['event' => $supplier->category->event]);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Feature\Supplier;
+namespace Test\Feature\Event\Supplier;
 
 use App\Models\Event;
 use App\Models\EventCategory;

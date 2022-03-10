@@ -37,6 +37,12 @@ class EventSupplier extends Model
         'supplier_id',
     ];
 
+    public function canCreateInstallment(Installment $installment)
+    {
+        $sum = $this->installments()->sum('value');
+        return ($sum + $installment->value) <= $this->value;
+    }
+
     public function name(): Attribute
     {
         return new Attribute(
@@ -57,5 +63,10 @@ class EventSupplier extends Model
     public function files(): HasMany
     {
         return $this->hasMany(ContractFile::class);
+    }
+
+    public function installments(): HasMany
+    {
+        return $this->hasMany(Installment::class);
     }
 }

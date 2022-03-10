@@ -1,13 +1,12 @@
 <?php
 
-namespace Test\Feature\Supplier;
+namespace Test\Feature\Event\Supplier;
 
 use App\Models\ContractFile;
 use App\Models\Event;
 use App\Models\EventCategory;
 use App\Models\Permission;
 use App\Models\Role;
-use App\Models\Supplier;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
