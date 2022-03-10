@@ -55,8 +55,7 @@ Route::prefix('/events')->group(function () {
         Route::put('/suppliers/{supplier}', 'update')->name('suppliers.update');
         Route::delete('/suppliers/{supplier}', 'detach')->name('suppliers.detach');
 
-        // Contract files
-        Route::delete('/suppliers/{supplier}/{file}', 'removeFile')->name('suppliers.remove_file')->scopeBindings();
+        Route::delete('/files/{file}', 'deleteFile')->name('files.delete');
     });
 });
 

@@ -43,8 +43,9 @@ class SupplierController extends Controller
     {
         $this->authorize(Permission::REMOVE_SUPPLIER->value, $supplier);
 
-        $supplier->delete();
-        Storage::delete($supplier->files->pluck('path')->all());
+        if ($supplier->delete()) {
+            Storage::delete($supplier->files->pluck('path')->all());
+        }
 
         return redirect()->route('events.view', ['event' => $supplier->category->event]);
     }
@@ -77,11 +78,10 @@ class SupplierController extends Controller
         return redirect()->route('events.view', ['event' => $supplier->category->event]);
     }
 
-    public function removeFile(EventSupplier $supplier, ContractFile $file)
+    public function deleteFile(ContractFile $file)
     {
-        $event = $supplier->category->event;
-
-        $this->authorize(Permission::EDIT_SUPPLIER->value, $event);
+        $event = $file->supplier->category->event;
+        $this->authorize(Permission::EDIT_SUPPLIER->value, $file->supplier);
 
         if ($file->delete()) {
             Storage::delete($file->path);
