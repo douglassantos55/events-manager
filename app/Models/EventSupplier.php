@@ -29,6 +29,7 @@ class EventSupplier extends Model
     // Eager loaded relationships
     protected $with = [
         'files',
+        'installments',
     ];
 
     protected $fillable = [

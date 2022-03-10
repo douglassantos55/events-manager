@@ -45,9 +45,9 @@
                     <va-button size="small" color="danger" icon="delete" @click="removeFile(file.id)" />
                 </p>
 
-
                 <h5 class="mb-2 mt-4">Installments</h5>
-                <table class="va-table" style="width: 100%">
+
+                <table class="va-table" style="width: 100%" v-if="supplier.installments.length > 0">
                     <tr>
                         <th>#</th>
                         <th>Value</th>
@@ -55,27 +55,46 @@
                         <th width="140">Status</th>
                     </tr>
 
-                    <tr>
-                        <td>1</td>
-                        <td>$ 150.00</td>
-                        <td>04/15/21</td>
-                        <td><va-select :options="['pending', 'paid']" /></td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>$ 150.00</td>
-                        <td>05/15/21</td>
-                        <td><va-select :options="['pending', 'paid']" /></td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>$ 150.00</td>
-                        <td>06/15/21</td>
-                        <td><va-select :options="['pending', 'paid']" /></td>
+                    <tr v-for="(installment, idx) in supplier.installments" :key="installment.id">
+                        <td>{{ idx + 1 }}</td>
+                        <td>{{ installment.value }}</td>
+                        <td>{{ installment.due_date }}</td>
+                        <td><va-select v-model="installment.status" :options="['pending', 'paid']" /></td>
                     </tr>
                 </table>
 
-                <va-button>Add installment</va-button>
+                <table class="va-table" style="width: 100%">
+                    <tr>
+                        <td>
+                            <va-input
+                                label="Value"
+                                v-model="installmentForm.value"
+                                :error="!!installmentForm.errors.value"
+                                :error-messages="installmentForm.errors.value"
+                            />
+                        </td>
+                        <td>
+                            <va-date-input
+                                label="Due date"
+                                v-model="installmentForm.due_date"
+                                :error="!!installmentForm.errors.due_date"
+                                :error-messages="installmentForm.errors.due_date"
+                            />
+                        </td>
+                        <td>
+                            <va-select
+                                label="Status"
+                                v-model="installmentForm.status"
+                                :options="['pending', 'paid']"
+                                :error="!!installmentForm.errors.status"
+                                :error-messages="installmentForm.errors.status"
+                            />
+                        </td>
+                        <td>
+                            <va-button @click="installmentForm.post(route('installments.create', supplier.id))">Save</va-button>
+                        </td>
+                    </tr>
+                </table>
             </div>
 
             <va-button type="submit" :loading="form.processing" color="success" class="mt-4">
@@ -110,6 +129,12 @@ export default {
             contract: [],
         })
 
+        const installmentForm = useForm({
+            value: '',
+            status: 'pending',
+            due_date: '',
+        })
+
         watchEffect(() => {
             if (props.supplier) {
                 form._method = 'put'
@@ -141,7 +166,7 @@ export default {
             })
         }
 
-        return { form, submit, removeFile }
+        return { form, submit, removeFile, installmentForm }
     }
 }
 </script>

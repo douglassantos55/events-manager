@@ -8,6 +8,7 @@ use App\Models\EventCategory;
 use App\Models\EventSupplier;
 use App\Models\Installment;
 use App\Models\Permission;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -94,12 +95,13 @@ class SupplierController extends Controller
     {
         $this->authorize(Permission::EDIT_SUPPLIER->value, $supplier);
 
-        $request->validate([
+        $validated = $request->validate([
             'value' => ['required', 'numeric'],
             'due_date' => ['required', 'date'],
         ]);
 
-        $installment = Installment::make($request->all());
+        $validated['due_date'] = Carbon::create($validated['due_date']);
+        $installment = Installment::make($validated);
 
         if (!$supplier->canCreateInstallment($installment)) {
             return back()->withErrors([
