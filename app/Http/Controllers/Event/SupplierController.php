@@ -39,14 +39,14 @@ class SupplierController extends Controller
         return redirect()->route('events.view', ['event' => $event]);
     }
 
-    public function detach(Event $event, EventCategory $category, EventSupplier $supplier)
+    public function detach(EventSupplier $supplier)
     {
-        $this->authorize(Permission::REMOVE_SUPPLIER->value, $event);
+        $this->authorize(Permission::REMOVE_SUPPLIER->value, $supplier);
 
         $supplier->delete();
         Storage::delete($supplier->files->pluck('path')->all());
 
-        return redirect()->route('events.view', ['event' => $event]);
+        return redirect()->route('events.view', ['event' => $supplier->category->event]);
     }
 
     public function update(Request $request, EventSupplier $supplier)

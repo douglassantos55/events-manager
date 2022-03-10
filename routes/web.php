@@ -52,8 +52,8 @@ Route::prefix('/events')->group(function () {
 
     Route::controller(SupplierController::class)->middleware('auth')->group(function () {
         Route::post('/suppliers/{event}/{category}', 'attach')->name('suppliers.attach');
-        Route::put('/suppliers/{supplier}', 'update')->name('suppliers.update')->scopeBindings();
-        Route::delete('/suppliers/{event}/{category}/{supplier}', 'detach')->name('suppliers.detach')->scopeBindings();
+        Route::put('/suppliers/{supplier}', 'update')->name('suppliers.update');
+        Route::delete('/suppliers/{supplier}', 'detach')->name('suppliers.detach');
 
         // Contract files
         Route::delete('/suppliers/{supplier}/{file}', 'removeFile')->name('suppliers.remove_file')->scopeBindings();

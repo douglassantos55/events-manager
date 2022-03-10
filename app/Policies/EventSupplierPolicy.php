@@ -64,9 +64,10 @@ class EventSupplierPolicy
      * @param  \App\Models\EventSupplier  $eventSupplier
      * @return \Illuminate\Auth\Access\Response|bool
      */
-    public function delete(User $user, EventSupplier $eventSupplier)
+    public function removeSupplier(User $user, EventSupplier $supplier)
     {
-        //
+        $event = $supplier->category->event;
+        return in_array($event->user_id, [$user->id, $user->captain?->id]);
     }
 
     /**

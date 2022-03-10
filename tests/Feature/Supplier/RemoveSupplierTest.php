@@ -27,12 +27,7 @@ class RemoveSupplierTest extends TestCase
         $category = $categories->first();
         $supplier = $category->suppliers->first();
 
-        $response = $this->delete(route('suppliers.detach', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]));
-
+        $response = $this->delete(route('suppliers.detach', ['supplier' => $supplier->id]));
         $response->assertRedirect(route('login'));
     }
 
@@ -51,12 +46,7 @@ class RemoveSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->delete(route('suppliers.detach', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]));
-
+        $response = $this->delete(route('suppliers.detach', ['supplier' => $supplier->id]));
         $response->assertForbidden();
     }
 
@@ -75,16 +65,11 @@ class RemoveSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->delete(route('suppliers.detach', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]));
-
+        $response = $this->delete(route('suppliers.detach', ['supplier' => $supplier->id]));
         $response->assertRedirect(route('events.view', ['event' => $event]));
     }
 
-    public function test_cannot_remove_from_others_events()
+    public function test_cannot_remove_from_other_users_events()
     {
         $event = Event::factory()->forUser()->create();
         $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
@@ -99,12 +84,7 @@ class RemoveSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->delete(route('suppliers.detach', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]));
-
+        $response = $this->delete(route('suppliers.detach', ['supplier' => $supplier->id]));
         $response->assertForbidden();
     }
 
@@ -125,64 +105,8 @@ class RemoveSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->delete(route('suppliers.detach', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]));
-
+        $response = $this->delete(route('suppliers.detach', ['supplier' => $supplier->id]));
         $response->assertRedirect(route('events.view', ['event' => $event]));
-    }
-
-    public function test_cannot_remove_supplier_from_other_events()
-    {
-        $user = User::factory()->create();
-        $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::REMOVE_SUPPLIER],
-        ]);
-
-        $event = Event::factory()->for($user)->create();
-        $other = Event::factory()->for($user)->create();
-
-        EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
-        $otherCategories = EventCategory::factory(3)->for($other)->hasSuppliers(3)->create();
-
-        $category = $otherCategories->first();
-        $otherSupplier = $category->suppliers->first();
-
-        Auth::login($user);
-
-        $response = $this->delete(route('suppliers.detach', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $otherSupplier->id,
-        ]));
-
-        $response->assertNotFound();
-    }
-
-    public function test_cannot_remove_non_attached_supplier()
-    {
-        $user = User::factory()->create();
-        $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::REMOVE_SUPPLIER],
-        ]);
-
-        $event = Event::factory()->for($user)->create();
-        $categories = EventCategory::factory(3)->for($event)->hasSuppliers(3)->create();
-
-        $category = $categories->first();
-        $supplier = Supplier::factory()->for($category->category, 'category')->create();
-
-        Auth::login($user);
-
-        $response = $this->delete(route('suppliers.detach', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]));
-
-        $response->assertNotFound();
     }
 
     public function test_removes_successfully()
@@ -201,12 +125,7 @@ class RemoveSupplierTest extends TestCase
         ]);
 
         Auth::login($user);
-
-        $response = $this->delete(route('suppliers.detach', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]));
+        $response = $this->delete(route('suppliers.detach', ['supplier' => $supplier->id]));
 
         $this->assertFalse($category->refresh()->suppliers->contains('supplier_id', $supplier->id));
         $response->assertRedirect(route('events.view', ['event' => $event]));
@@ -236,12 +155,7 @@ class RemoveSupplierTest extends TestCase
         ]);
 
         Auth::login($user);
-
-        $this->delete(route('suppliers.detach', [
-            'event' => $event->id,
-            'category' => $category->id,
-            'supplier' => $supplier->id,
-        ]));
+        $this->delete(route('suppliers.detach', ['supplier' => $supplier->id]));
 
         $this->assertCount(0, $storage->files('contracts'));
         $this->assertEquals(0, ContractFile::all()->count());
