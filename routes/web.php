@@ -51,7 +51,7 @@ Route::prefix('/events')->group(function () {
     });
 
     Route::controller(SupplierController::class)->middleware('auth')->group(function () {
-        Route::post('/suppliers/{event}/{category}', 'attach')->name('suppliers.attach');
+        Route::post('/suppliers/{category}', 'attach')->name('suppliers.attach');
         Route::put('/suppliers/{supplier}', 'update')->name('suppliers.update');
         Route::delete('/suppliers/{supplier}', 'detach')->name('suppliers.detach');
 

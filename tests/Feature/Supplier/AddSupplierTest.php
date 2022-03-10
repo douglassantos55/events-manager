@@ -22,12 +22,7 @@ class AddSupplierTest extends TestCase
         $category = $event->categories->first();
         $supplier = Supplier::factory()->for($category->category, 'category')->create();
 
-        $route = route('suppliers.attach', [
-            'event' => $event,
-            'category' => $category,
-        ]);
-
-        $response = $this->post($route, [
+        $response = $this->post(route('suppliers.attach', ['category' => $category]), [
             'value' => 4699,
             'status' => 'pending',
             'supplier_id' => $supplier->id,
@@ -50,10 +45,7 @@ class AddSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $route = route('suppliers.attach', [
-            'event' => $event,
-            'category' => $category,
-        ]);
+        $route = route('suppliers.attach', ['category' => $category]);
 
         $response = $this->post($route, [
             'value' => 4699,
@@ -78,10 +70,7 @@ class AddSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $route = route('suppliers.attach', [
-            'event' => $event,
-            'category' => $category,
-        ]);
+        $route = route('suppliers.attach', ['category' => $category]);
 
         $response = $this->post($route, [
             'value' => 4699,
@@ -106,10 +95,7 @@ class AddSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $route = route('suppliers.attach', [
-            'event' => $event,
-            'category' => $category,
-        ]);
+        $route = route('suppliers.attach', ['category' => $category]);
 
         $response = $this->post($route, [
             'value' => 4699,
@@ -135,10 +121,7 @@ class AddSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $route = route('suppliers.attach', [
-            'event' => $event,
-            'category' => $category,
-        ]);
+        $route = route('suppliers.attach', ['category' => $category]);
 
         $response = $this->post($route, [
             'value' => 4699,
@@ -163,10 +146,7 @@ class AddSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $route = route('suppliers.attach', [
-            'event' => $event,
-            'category' => $category,
-        ]);
+        $route = route('suppliers.attach', ['category' => $category]);
 
         $response = $this->post($route, [
             'value' => '69,99',
@@ -194,10 +174,7 @@ class AddSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $route = route('suppliers.attach', [
-            'event' => $event,
-            'category' => $category,
-        ]);
+        $route = route('suppliers.attach', ['category' => $category]);
 
         $response = $this->post($route, [
             'value' => 69,
@@ -233,10 +210,7 @@ class AddSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $route = route('suppliers.attach', [
-            'event' => $event,
-            'category' => $category,
-        ]);
+        $route = route('suppliers.attach', ['category' => $category]);
 
         $response = $this->post($route, [
             'value' => 69,
@@ -263,10 +237,7 @@ class AddSupplierTest extends TestCase
 
         Auth::login($user);
 
-        $route = route('suppliers.attach', [
-            'event' => $event,
-            'category' => $event->categories->first()->id,
-        ]);
+        $route = route('suppliers.attach', ['category' => $event->categories->first()->id]);
 
         $response = $this->post($route, [
             'value' => 69,
@@ -291,10 +262,7 @@ class AddSupplierTest extends TestCase
         Auth::login($user);
         $supplier = Supplier::factory()->forCategory()->create();
 
-        $route = route('suppliers.attach', [
-            'event' => $event,
-            'category' => $event->categories->first()->id,
-        ]);
+        $route = route('suppliers.attach', ['category' => $event->categories->first()->id]);
 
         $response = $this->post($route, [
             'value' => 69420,

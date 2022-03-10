@@ -11,10 +11,11 @@ class EventSupplierPolicy
     use HandlesAuthorization;
 
     /**
-     * Determine whether the user can update the model.
+     * Determine whether the user can update the supplier.
      *
      * @param  \App\Models\User  $user
-     * @param  \App\Models\EventSupplier  $eventSupplier
+     * @param  \App\Models\EventSupplier  $supplier
+     *
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function editSupplier(User $user, EventSupplier $supplier)
@@ -24,10 +25,11 @@ class EventSupplierPolicy
     }
 
     /**
-     * Determine whether the user can delete the model.
+     * Determine whether the user can delete the supplier.
      *
      * @param  \App\Models\User  $user
      * @param  \App\Models\EventSupplier  $eventSupplier
+     *
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function removeSupplier(User $user, EventSupplier $supplier)

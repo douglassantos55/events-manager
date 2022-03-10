@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Event;
 
 use App\Http\Controllers\Controller;
 use App\Models\ContractFile;
-use App\Models\Event;
 use App\Models\EventCategory;
 use App\Models\EventSupplier;
 use App\Models\Permission;
@@ -15,9 +14,9 @@ use Illuminate\Validation\Rule;
 
 class SupplierController extends Controller
 {
-    public function attach(Request $request, Event $event, EventCategory $category)
+    public function attach(Request $request, EventCategory $category)
     {
-        $this->authorize(Permission::ADD_SUPPLIER->value, $event);
+        $this->authorize(Permission::ADD_SUPPLIER->value, $category);
 
         $validated = $request->validate([
             'value' => ['required', 'numeric'],
@@ -36,7 +35,7 @@ class SupplierController extends Controller
             $category->suppliers()->create($validated);
         }
 
-        return redirect()->route('events.view', ['event' => $event]);
+        return redirect()->route('events.view', ['event' => $category->event]);
     }
 
     public function detach(EventSupplier $supplier)
