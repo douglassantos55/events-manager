@@ -41,7 +41,7 @@
                 />
 
                 <p v-for="file in supplier.files" :key="file.id" class="mb-1">
-                    {{ file.path }}
+                    <a :href="file.path" target="_blank">{{ file.path }}</a>
                     <va-button size="small" color="danger" icon="delete" @click="removeFile(file.id)" />
                 </p>
 
@@ -59,7 +59,13 @@
                         <td>{{ idx + 1 }}</td>
                         <td>{{ installment.value }}</td>
                         <td>{{ installment.due_date }}</td>
-                        <td><va-select v-model="installment.status" :options="['pending', 'paid']" /></td>
+                        <td>
+                            <va-select
+                                v-model="installment.status"
+                                :options="['pending', 'paid']"
+                                @update:modelValue="updateInstallment(installment)"
+                            />
+                        </td>
                     </tr>
                 </table>
 
@@ -91,7 +97,9 @@
                             />
                         </td>
                         <td>
-                            <va-button @click="installmentForm.post(route('installments.create', supplier.id))">Save</va-button>
+                            <va-button @click="installmentForm.post(route('installments.create', supplier.id))">
+                                Add
+                            </va-button>
                         </td>
                     </tr>
                 </table>
@@ -166,7 +174,13 @@ export default {
             })
         }
 
-        return { form, submit, removeFile, installmentForm }
+        function updateInstallment(installment) {
+            Inertia.put(route('installments.update', installment.id), {
+                ...installment
+            })
+        }
+
+        return { form, submit, removeFile, installmentForm, updateInstallment }
     }
 }
 </script>
