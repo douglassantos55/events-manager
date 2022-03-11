@@ -28,6 +28,7 @@ class AddInstallmentTest extends TestCase
             'supplier' => $supplier,
         ]), [
             'value' => '355.34',
+            'status' => 'pending',
             'due_date' => '2022-10-20',
         ]);
 
@@ -52,6 +53,7 @@ class AddInstallmentTest extends TestCase
             'supplier' => $supplier,
         ]), [
             'value' => '355.34',
+            'status' => 'pending',
             'due_date' => '2022-10-20',
         ]);
 
@@ -78,6 +80,7 @@ class AddInstallmentTest extends TestCase
             'supplier' => $supplier,
         ]), [
             'value' => '355.34',
+            'status' => 'pending',
             'due_date' => '2022-10-20',
         ]);
 
@@ -103,6 +106,7 @@ class AddInstallmentTest extends TestCase
             'supplier' => $supplier,
         ]), [
             'value' => '355.34',
+            'status' => 'pending',
             'due_date' => '2022-10-20',
         ]);
 
@@ -130,6 +134,7 @@ class AddInstallmentTest extends TestCase
             'supplier' => $supplier,
         ]), [
             'value' => '355.34',
+            'status' => 'pending',
             'due_date' => '2022-10-20',
         ]);
 
@@ -158,6 +163,7 @@ class AddInstallmentTest extends TestCase
             'supplier' => $supplier,
         ]), [
             'value' => '355.34',
+            'status' => 'pending',
             'due_date' => '2022-10-20',
         ]);
 
@@ -199,6 +205,7 @@ class AddInstallmentTest extends TestCase
             'supplier' => $supplier,
         ]), [
             'value' => '355,34',
+            'status' => 'pending',
             'due_date' => '2022-13-20',
         ]);
 
@@ -227,6 +234,7 @@ class AddInstallmentTest extends TestCase
             'supplier' => $supplier,
         ]), [
             'value' => '355.34',
+            'status' => 'pending',
             'due_date' => '2022-03-20',
         ]);
 
@@ -258,6 +266,7 @@ class AddInstallmentTest extends TestCase
             'supplier' => $supplier,
         ]), [
             'value' => '500',
+            'status' => 'pending',
             'due_date' => '2022-05-20',
         ]);
 

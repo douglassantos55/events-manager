@@ -10,6 +10,9 @@ class Installment extends Model
 {
     use HasFactory;
 
+    const STATUS_PAID = 'paid';
+    const STATUS_PENDING = 'pending';
+
     protected $fillable = [
         'value',
         'due_date',

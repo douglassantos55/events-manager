@@ -8,6 +8,7 @@ use App\Models\EventCategory;
 use App\Models\EventSupplier;
 use App\Models\Installment;
 use App\Models\Permission;
+use App\Models\InstallmentStatus;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
@@ -97,6 +98,10 @@ class SupplierController extends Controller
 
         $validated = $request->validate([
             'value' => ['required', 'numeric'],
+            'status' => [
+                'required',
+                Rule::in([Installment::STATUS_PAID, Installment::STATUS_PENDING])
+            ],
             'due_date' => ['required', 'date'],
         ]);
 
@@ -112,5 +117,27 @@ class SupplierController extends Controller
         $supplier->installments()->save($installment);
 
         return redirect()->route('events.view', ['event' => $supplier->category->event]);
+    }
+
+    public function updateInstallment(Request $request, Installment $installment)
+    {
+        $this->authorize(Permission::EDIT_SUPPLIER->value, $installment->supplier);
+
+        $validated = $request->validate([
+            'value' => ['sometimes', 'required', 'numeric'],
+            'status' => [
+                'sometimes',
+                'required',
+                Rule::in([Installment::STATUS_PAID, Installment::STATUS_PENDING])
+            ],
+            'due_date' => ['sometimes', 'required', 'date'],
+        ]);
+
+        if (isset($validated['due_date'])) {
+            $validated['due_date'] = Carbon::create($validated['due_date']);
+        }
+
+        $installment->update($validated);
+        return redirect()->route('events.view', ['event' => $installment->supplier->category->event]);
     }
 }

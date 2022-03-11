@@ -57,6 +57,7 @@ Route::prefix('/events')->group(function () {
 
         Route::delete('/files/{file}', 'deleteFile')->name('files.delete');
         Route::post('/installments/{supplier}', 'createInstallment')->name('installments.create');
+        Route::put('/installments/{installment}', 'updateInstallment')->name('installments.update');
     });
 });
 
