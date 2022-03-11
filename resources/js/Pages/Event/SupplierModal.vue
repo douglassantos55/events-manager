@@ -53,6 +53,7 @@
                         <th>Value</th>
                         <th>Due Date</th>
                         <th width="140">Status</th>
+                        <th>&nbsp;</th>
                     </tr>
 
                     <tr v-for="(installment, idx) in supplier.installments" :key="installment.id">
@@ -64,6 +65,13 @@
                                 v-model="installment.status"
                                 :options="['pending', 'paid']"
                                 @update:modelValue="updateInstallment(installment)"
+                            />
+                        </td>
+                        <td>
+                            <va-button
+                                color="danger"
+                                icon="delete"
+                                @click="deleteInstallment(installment.id)"
                             />
                         </td>
                     </tr>
@@ -97,9 +105,7 @@
                             />
                         </td>
                         <td>
-                            <va-button @click="installmentForm.post(route('installments.create', supplier.id))">
-                                Add
-                            </va-button>
+                            <va-button @click="createInstallment">Add</va-button>
                         </td>
                     </tr>
                 </table>
@@ -158,7 +164,11 @@ export default {
             if (props.supplier) {
                 form.post(route('suppliers.update', props.supplier.id), {
                     preserveScroll: true,
-                    onSuccess: () => emit('update:modelValue', false)
+                    onSuccess: page => {
+                        form.reset('contract')
+                        const category = page.props.event.categories.find(cat => cat.id == props.category.id)
+                        props.supplier.files = category.suppliers.find(sup => sup.id == props.supplier.id).files
+                    }
                 })
             } else {
                 form.post(route('suppliers.attach', props.category.id), {
@@ -170,17 +180,52 @@ export default {
 
         function removeFile(file) {
             Inertia.delete(route('files.delete', file), {
-                onSuccess: () => emit('update:modelValue', false)
+                preserveScroll: true,
+                onSuccess: () => {
+                    props.supplier.files = props.supplier.files.filter(current => {
+                        return current.id != file
+                    })
+                }
+            })
+        }
+
+        function createInstallment() {
+            installmentForm.post(route('installments.create', props.supplier.id), {
+                preserveScroll: true,
+                onSuccess: page => {
+                    const category = page.props.event.categories.find(cat => cat.id == props.category.id)
+                    const supplier = category.suppliers.find(sup => sup.id == props.supplier.id)
+                    props.supplier.installments = supplier.installments
+                }
             })
         }
 
         function updateInstallment(installment) {
-            Inertia.put(route('installments.update', installment.id), {
-                ...installment
+            Inertia.put(route('installments.update', installment.id), installment, {
+                preserveScroll: true,
             })
         }
 
-        return { form, submit, removeFile, installmentForm, updateInstallment }
+        function deleteInstallment(id) {
+            Inertia.delete(route('installments.delete', id), {
+                preserveScroll: true,
+                onSuccess: () => {
+                    props.supplier.installments = props.supplier.installments.filter(installment => {
+                        return installment.id != id
+                    })
+                }
+            })
+        }
+
+        return {
+            form,
+            submit,
+            removeFile,
+            installmentForm,
+            createInstallment,
+            updateInstallment,
+            deleteInstallment,
+        }
     }
 }
 </script>
