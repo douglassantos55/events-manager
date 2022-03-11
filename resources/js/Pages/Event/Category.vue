@@ -73,6 +73,12 @@ export default {
     setup(props) {
         const selectedSupplier = ref(null)
 
+        watch(() => props.category, () => {
+            if (selectedSupplier.value) {
+                selectedSupplier.value = props.category.suppliers.find(sup => sup.id == selectedSupplier.value.id)
+            }
+        })
+
         const supplierModal = useModal({
             event: props.event,
             category: props.category,
@@ -86,11 +92,18 @@ export default {
         })
 
         function removeCategory() {
-            Inertia.delete(route('categories.detach', props.category.id));
+            Inertia.delete(route('categories.detach', {
+                event: props.event.id,
+                category: props.category.id
+            }), {
+                preserveScroll: true,
+            });
         }
 
         function removeSupplier(supplier) {
-            Inertia.delete(route('suppliers.detach', supplier));
+            Inertia.delete(route('suppliers.detach', supplier), {
+                preserveScroll: true,
+            });
         }
 
         return {

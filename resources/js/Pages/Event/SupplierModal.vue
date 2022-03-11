@@ -166,11 +166,7 @@ export default {
             if (props.supplier) {
                 form.post(route('suppliers.update', props.supplier.id), {
                     preserveScroll: true,
-                    onSuccess: page => {
-                        form.reset('contract')
-                        const category = page.props.event.categories.find(cat => cat.id == props.category.id)
-                        props.supplier.files = category.suppliers.find(sup => sup.id == props.supplier.id).files
-                    }
+                    onSuccess: () => form.reset('contract'),
                 })
             } else {
                 form.post(route('suppliers.attach', props.category.id), {
@@ -183,23 +179,12 @@ export default {
         function removeFile(file) {
             Inertia.delete(route('files.delete', file), {
                 preserveScroll: true,
-                onSuccess: () => {
-                    props.supplier.files = props.supplier.files.filter(current => {
-                        return current.id != file
-                    })
-                }
             })
         }
 
         function createInstallment() {
             installmentForm.post(route('installments.create', props.supplier.id), {
                 preserveScroll: true,
-                onSuccess: page => {
-                    installmentForm.reset('value', 'due_date')
-                    const category = page.props.event.categories.find(cat => cat.id == props.category.id)
-                    const supplier = category.suppliers.find(sup => sup.id == props.supplier.id)
-                    props.supplier.installments = supplier.installments
-                }
             })
         }
 
@@ -212,11 +197,6 @@ export default {
         function deleteInstallment(id) {
             Inertia.delete(route('installments.delete', id), {
                 preserveScroll: true,
-                onSuccess: () => {
-                    props.supplier.installments = props.supplier.installments.filter(installment => {
-                        return installment.id != id
-                    })
-                }
             })
         }
 
