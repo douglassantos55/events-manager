@@ -19,7 +19,7 @@ return new class extends Migration
             $table->decimal('value');
             $table->date('due_date');
             $table->string('status')->default('pending');
-            $table->foreignIdFor(EventSupplier::class);
+            $table->foreignIdFor(EventSupplier::class)->constrained('events_suppliers')->cascadeOnDelete();
             $table->timestamps();
         });
     }

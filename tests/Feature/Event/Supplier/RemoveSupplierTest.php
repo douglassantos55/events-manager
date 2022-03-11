@@ -5,6 +5,8 @@ namespace Test\Feature\Event\Supplier;
 use App\Models\ContractFile;
 use App\Models\Event;
 use App\Models\EventCategory;
+use App\Models\EventSupplier;
+use App\Models\Installment;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\User;
@@ -158,5 +160,21 @@ class RemoveSupplierTest extends TestCase
 
         $this->assertCount(0, $storage->files('contracts'));
         $this->assertEquals(0, ContractFile::all()->count());
+    }
+
+    public function test_removes_installments()
+    {
+        $supplier = EventSupplier::factory()->hasInstallments(5)->create();
+
+        $user = $supplier->category->event->user;
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::REMOVE_SUPPLIER],
+        ]);
+
+        Auth::login($user);
+        $this->delete(route('suppliers.detach', ['supplier' => $supplier->id]));
+
+        $this->assertModelMissing($supplier);
+        $this->assertEquals(0, Installment::all()->count());
     }
 }
