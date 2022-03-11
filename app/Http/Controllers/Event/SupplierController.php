@@ -140,4 +140,14 @@ class SupplierController extends Controller
         $installment->update($validated);
         return redirect()->route('events.view', ['event' => $installment->supplier->category->event]);
     }
+
+
+    public function deleteInstallment(Installment $installment)
+    {
+        $this->authorize(Permission::EDIT_SUPPLIER->value, $installment->supplier);
+
+        $installment->delete();
+
+        return redirect()->route('events.view', ['event' => $installment->supplier->category->event]);
+    }
 }
