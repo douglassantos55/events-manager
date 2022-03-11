@@ -112,7 +112,7 @@
             </div>
 
             <va-button type="submit" :loading="form.processing" color="success" class="mt-4">
-                Add supplier
+                {{ supplier ? 'Save' : 'Add' }} supplier
             </va-button>
         </form>
     </va-modal>
@@ -155,6 +155,8 @@ export default {
                 form.value = props.supplier.value
                 form.status = props.supplier.status
                 form.supplier_id = props.supplier.supplier_id
+            } else {
+                form.reset()
             }
         })
 
@@ -193,6 +195,7 @@ export default {
             installmentForm.post(route('installments.create', props.supplier.id), {
                 preserveScroll: true,
                 onSuccess: page => {
+                    installmentForm.reset('value', 'due_date')
                     const category = page.props.event.categories.find(cat => cat.id == props.category.id)
                     const supplier = category.suppliers.find(sup => sup.id == props.supplier.id)
                     props.supplier.installments = supplier.installments

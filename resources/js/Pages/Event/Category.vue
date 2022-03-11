@@ -51,7 +51,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
 import SupplierModal from './SupplierModal.vue'
 
@@ -77,6 +77,12 @@ export default {
             event: props.event,
             category: props.category,
             suppliers: props.suppliers,
+        })
+
+        watch(() => supplierModal.visible.value, (current, previous) => {
+            if (previous && !current) {
+                selectedSupplier.value = null
+            }
         })
 
         function removeCategory() {
