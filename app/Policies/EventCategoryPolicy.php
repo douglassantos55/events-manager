@@ -20,7 +20,19 @@ class EventCategoryPolicy
      */
     public function addSupplier(User $user, EventCategory $category)
     {
-        $event = $category->event;
-        return in_array($event->user_id, [$user->id, $user->captain?->id]);
+        return in_array($category->event->user_id, [$user->id, $user->captain?->id]);
+    }
+
+    /**
+     * Determine whether the user can delete the category.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\EventCategory $category
+     *
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function removeCategory(User $user, EventCategory $category)
+    {
+        return in_array($category->event->user_id, [$user->id, $user->captain?->id]);
     }
 }

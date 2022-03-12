@@ -69,18 +69,6 @@ class EventPolicy
     }
 
     /**
-     * Determine whether the user can remove categories from the event.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Event  $event
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function removeCategory(User $user, Event $event)
-    {
-        return in_array($event->user_id, [$user->id, $user->captain?->id]);
-    }
-
-    /**
      * Determine whether the user can add suppliers to the event.
      *
      * @param  \App\Models\User  $user
@@ -88,18 +76,6 @@ class EventPolicy
      * @return \Illuminate\Auth\Access\Response|bool
      */
     public function addSupplier(User $user, Event $event)
-    {
-        return in_array($event->user_id, [$user->id, $user->captain?->id]);
-    }
-
-    /**
-     * Determine whether the user can remove suppliers from the event.
-     *
-     * @param  \App\Models\User  $user
-     * @param  \App\Models\Event  $event
-     * @return \Illuminate\Auth\Access\Response|bool
-     */
-    public function removeSupplier(User $user, Event $event)
     {
         return in_array($event->user_id, [$user->id, $user->captain?->id]);
     }

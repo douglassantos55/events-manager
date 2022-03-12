@@ -29,12 +29,12 @@ class CategoryController extends Controller
         return redirect()->route('events.view', ['event' => $event]);
     }
 
-    public function detach(Event $event, EventCategory $category)
+    public function detach(EventCategory $category)
     {
-        $this->authorize(Permission::REMOVE_CATEGORY->value, $event);
+        $this->authorize(Permission::REMOVE_CATEGORY->value, $category);
 
         $category->delete();
 
-        return redirect()->route('events.view', ['event' => $event]);
+        return redirect()->route('events.view', ['event' => $category->event]);
     }
 }

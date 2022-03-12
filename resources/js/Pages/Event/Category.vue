@@ -92,10 +92,7 @@ export default {
         })
 
         function removeCategory() {
-            Inertia.delete(route('categories.detach', {
-                event: props.event.id,
-                category: props.category.id
-            }), {
+            Inertia.delete(route('categories.detach', props.category.id), {
                 preserveScroll: true,
             });
         }

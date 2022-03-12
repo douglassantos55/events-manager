@@ -29,7 +29,6 @@ class RemoveCategoryTest extends TestCase
         }
 
         $response = $this->delete(route('categories.detach', [
-            'event' => $event->id,
             'category' => $event->categories->first()->id,
         ]));
 
@@ -56,7 +55,6 @@ class RemoveCategoryTest extends TestCase
         Auth::login($user);
 
         $response = $this->delete(route('categories.detach', [
-            'event' => $event->id,
             'category' => $event->categories->first()->id,
         ]));
 
@@ -83,7 +81,6 @@ class RemoveCategoryTest extends TestCase
         Auth::login($user);
 
         $response = $this->delete(route('categories.detach', [
-            'event' => $event->id,
             'category' => $event->categories->first()->id,
         ]));
 
@@ -110,7 +107,6 @@ class RemoveCategoryTest extends TestCase
         Auth::login($user);
 
         $response = $this->delete(route('categories.detach', [
-            'event' => $event->id,
             'category' => $event->categories->first()->id,
         ]));
 
@@ -131,7 +127,6 @@ class RemoveCategoryTest extends TestCase
         Auth::login($user);
 
         $response = $this->delete(route('categories.detach', [
-            'event' => $event->id,
             'category' => $category->id,
         ]));
 
@@ -159,7 +154,6 @@ class RemoveCategoryTest extends TestCase
         Auth::login($user);
 
         $response = $this->delete(route('categories.detach', [
-            'event' => $event->id,
             'category' => $event->categories->first()->id,
         ]));
 
@@ -188,7 +182,6 @@ class RemoveCategoryTest extends TestCase
         $category = $event->categories->first();
 
         $response = $this->delete(route('categories.detach', [
-            'event' => $event->id,
             'category' => $category->id,
         ]));
 
@@ -221,7 +214,6 @@ class RemoveCategoryTest extends TestCase
         Auth::login($user);
 
         $response = $this->delete(route('categories.detach', [
-            'event' => $event->id,
             'category' => $category->id,
         ]));
 
