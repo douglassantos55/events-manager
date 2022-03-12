@@ -46,7 +46,7 @@ class EditInstallmentTest extends TestCase
 
         $user = $event->user;
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::EDIT_INSTALLMENT],
         ]);
 
         Auth::login($user);
@@ -65,7 +65,7 @@ class EditInstallmentTest extends TestCase
 
         $user = User::factory()->for($parent, 'captain')->create();
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::EDIT_INSTALLMENT],
         ]);
 
         Auth::login($user);
@@ -82,7 +82,7 @@ class EditInstallmentTest extends TestCase
 
         $user = User::factory()->create();
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::EDIT_INSTALLMENT],
         ]);
 
         Auth::login($user);
@@ -100,7 +100,7 @@ class EditInstallmentTest extends TestCase
 
         $user = $event->user;
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::EDIT_INSTALLMENT],
         ]);
 
         Auth::login($user);
@@ -127,7 +127,7 @@ class EditInstallmentTest extends TestCase
 
         $user = $event->user;
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::EDIT_INSTALLMENT],
         ]);
 
         Auth::login($user);

@@ -7,6 +7,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\Event\AssigneeController;
 use App\Http\Controllers\Event\CategoryController;
+use App\Http\Controllers\Event\InstallmentController;
 use App\Http\Controllers\Event\SupplierController;
 
 /*
@@ -54,12 +55,13 @@ Route::prefix('/events')->group(function () {
         Route::post('/suppliers/{category}', 'attach')->name('suppliers.attach');
         Route::put('/suppliers/{supplier}', 'update')->name('suppliers.update');
         Route::delete('/suppliers/{supplier}', 'detach')->name('suppliers.detach');
-
         Route::delete('/files/{file}', 'deleteFile')->name('files.delete');
+    });
 
-        Route::post('/installments/{supplier}', 'createInstallment')->name('installments.create');
-        Route::put('/installments/{installment}', 'updateInstallment')->name('installments.update');
-        Route::delete('/installments/{installment}', 'deleteInstallment')->name('installments.delete');
+    Route::controller(InstallmentController::class)->middleware('auth')->group(function () {
+        Route::post('/installments/{supplier}', 'create')->name('installments.create');
+        Route::put('/installments/{installment}', 'update')->name('installments.update');
+        Route::delete('/installments/{installment}', 'delete')->name('installments.delete');
     });
 });
 

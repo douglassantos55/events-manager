@@ -48,7 +48,7 @@ class RemoveInstallmentTest extends TestCase
 
         $user = $event->user;
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::REMOVE_INSTALLMENT],
         ]);
 
         Auth::login($user);
@@ -67,7 +67,7 @@ class RemoveInstallmentTest extends TestCase
 
         $user = User::factory()->for($parent, 'captain')->create();
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::REMOVE_INSTALLMENT],
         ]);
 
         Auth::login($user);
@@ -84,7 +84,7 @@ class RemoveInstallmentTest extends TestCase
 
         $user = User::factory()->create();
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::REMOVE_INSTALLMENT],
         ]);
 
         Auth::login($user);
@@ -102,7 +102,7 @@ class RemoveInstallmentTest extends TestCase
 
         $user = $event->user;
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::REMOVE_INSTALLMENT],
         ]);
 
         Auth::login($user);

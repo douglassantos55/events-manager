@@ -29,4 +29,8 @@ enum Permission: string
     case REMOVE_SUPPLIER = 'remove-supplier';
 
     case ASSIGN_MEMBER = 'assign-member';
+
+    case ADD_INSTALLMENT = 'add-installment';
+    case EDIT_INSTALLMENT = 'edit-installment';
+    case REMOVE_INSTALLMENT = 'remove-installment';
 }

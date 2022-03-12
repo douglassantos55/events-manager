@@ -71,7 +71,7 @@ class AddInstallmentTest extends TestCase
         ]);
 
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::ADD_INSTALLMENT],
         ]);
 
         Auth::login($user);
@@ -97,7 +97,7 @@ class AddInstallmentTest extends TestCase
 
         $user = User::factory()->create();
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::ADD_INSTALLMENT],
         ]);
 
         Auth::login($user);
@@ -125,7 +125,7 @@ class AddInstallmentTest extends TestCase
 
         $user = User::factory()->for($parent, 'captain')->create();
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::ADD_INSTALLMENT],
         ]);
 
         Auth::login($user);
@@ -154,7 +154,7 @@ class AddInstallmentTest extends TestCase
         $user = User::factory()->for($parent, 'captain')->create();
 
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::ADD_INSTALLMENT],
         ]);
 
         Auth::login($user);
@@ -190,7 +190,7 @@ class AddInstallmentTest extends TestCase
     {
         $user = User::factory()->create();
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::ADD_INSTALLMENT],
         ]);
 
         $event = Event::factory()->for($user)->create();
@@ -219,7 +219,7 @@ class AddInstallmentTest extends TestCase
     {
         $user = User::factory()->create();
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::ADD_INSTALLMENT],
         ]);
 
         $event = Event::factory()->for($user)->create();
@@ -246,7 +246,7 @@ class AddInstallmentTest extends TestCase
     {
         $user = User::factory()->create();
         $user->role = Role::factory()->for($user)->create([
-            'permissions' => [Permission::EDIT_SUPPLIER],
+            'permissions' => [Permission::ADD_INSTALLMENT],
         ]);
 
         $event = Event::factory()->for($user)->create();
