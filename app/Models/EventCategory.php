@@ -64,6 +64,6 @@ class EventCategory extends Model
 
     public function suppliers(): HasMany
     {
-        return $this->hasMany(EventSupplier::class);
+        return $this->hasMany(EventSupplier::class, 'event_category_id');
     }
 }

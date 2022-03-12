@@ -2,14 +2,19 @@
 
 namespace Test\Feature\Event\Supplier;
 
+use App\Models\ContractFile;
 use App\Models\Event;
+use App\Models\EventCategory;
 use App\Models\EventSupplier;
+use App\Models\Installment;
 use App\Models\Permission;
 use App\Models\Role;
 use App\Models\SupplierCategory;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Tests\TestCase;
 
 class RemoveCategoryTest extends TestCase
@@ -116,7 +121,7 @@ class RemoveCategoryTest extends TestCase
     public function test_cannot_remove_category_not_associated_to_event()
     {
         $user = User::factory()->create();
-        $event = Event::factory()->for($user)->create();
+        Event::factory()->for($user)->create();
 
         $category = SupplierCategory::factory()->create();
 
@@ -213,13 +218,60 @@ class RemoveCategoryTest extends TestCase
 
         Auth::login($user);
 
-        $response = $this->delete(route('categories.detach', [
+        $this->delete(route('categories.detach', [
             'category' => $category->id,
         ]));
 
         $this->assertCount(0, EventSupplier::all());
         $this->assertFalse($event->refresh()->categories->contains($category));
-        $response->assertRedirect(route('events.view', ['event' => $event]));
+    }
 
+    public function test_removes_installments()
+    {
+        $user = User::factory()->create();
+        $event = Event::factory()->for($user)->create();
+
+        $category = EventCategory::factory()->for($event)->create();
+        $category->suppliers = EventSupplier::factory(5)->for($category, 'category')->hasInstallments(3)->create();
+
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::REMOVE_CATEGORY],
+        ]);
+
+        Auth::login($user);
+
+        $this->delete(route('categories.detach', [
+            'category' => $category->id,
+        ]));
+
+        $this->assertCount(0, EventSupplier::all());
+        $this->assertCount(0, Installment::all());
+    }
+
+    public function test_removes_files()
+    {
+        $storage = Storage::fake();
+
+        $user = User::factory()->create();
+        $event = Event::factory()->for($user)->create();
+
+        $category = EventCategory::factory()->for($event)->create();
+        $category->suppliers = EventSupplier::factory(5)->for($category, 'category')->create();
+
+        $path = UploadedFile::fake()->create('document.pdf')->store('contracts');
+        $category->suppliers->first()->files()->create(['path' => $path]);
+
+        $user->role = Role::factory()->for($user)->create([
+            'permissions' => [Permission::REMOVE_CATEGORY],
+        ]);
+
+        Auth::login($user);
+
+        $this->delete(route('categories.detach', [
+            'category' => $category->id,
+        ]));
+
+        $this->assertCount(0, ContractFile::all());
+        $this->assertCount(0, $storage->files('contracts'));
     }
 }

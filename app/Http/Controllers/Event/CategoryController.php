@@ -7,6 +7,8 @@ use App\Models\Event;
 use App\Models\EventCategory;
 use App\Models\Permission;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class CategoryController extends Controller
 {
@@ -33,7 +35,16 @@ class CategoryController extends Controller
     {
         $this->authorize(Permission::REMOVE_CATEGORY->value, $category);
 
-        $category->delete();
+        DB::transaction(function () use ($category) {
+            if ($category->delete()) {
+                foreach ($category->suppliers as $supplier) {
+                    // model events aren't triggered with cascade
+                    if (!Storage::delete($supplier->files->pluck('path')->all())) {
+                        throw new \ErrorException("Could not remove files");
+                    }
+                }
+            }
+        });
 
         return redirect()->route('events.view', ['event' => $category->event]);
     }

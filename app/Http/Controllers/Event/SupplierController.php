@@ -6,11 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\ContractFile;
 use App\Models\EventCategory;
 use App\Models\EventSupplier;
-use App\Models\Installment;
 use App\Models\Permission;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
@@ -44,9 +43,13 @@ class SupplierController extends Controller
     {
         $this->authorize(Permission::REMOVE_SUPPLIER->value, $supplier);
 
-        if ($supplier->delete()) {
-            Storage::delete($supplier->files->pluck('path')->all());
-        }
+        DB::transaction(function () use ($supplier) {
+            if ($supplier->delete()) {
+                if (!Storage::delete($supplier->files->pluck('path')->all())) {
+                    throw new \ErrorException("Could not remove files");
+                }
+            }
+        });
 
         return redirect()->route('events.view', ['event' => $supplier->category->event]);
     }
@@ -64,17 +67,24 @@ class SupplierController extends Controller
             ],
         ]);
 
-        $supplier->update($request->only(['value', 'status']));
+        DB::transaction(function () use ($supplier, $request) {
+            $supplier->update($request->only(['value', 'status']));
 
-        if ($request->file('contract')) {
-            /** @var UploadedFile $file */
-            foreach ($request->file('contract') as $file) {
-                if ($file->isValid()) {
-                    $path = $file->store('contracts');
-                    $supplier->files()->create(['path' => $path]);
+            if ($request->file('contract')) {
+                /** @var UploadedFile $file */
+                foreach ($request->file('contract') as $file) {
+                    if ($file->isValid()) {
+                        $path = $file->store('contracts');
+
+                        if ($path === false) {
+                            throw new \ErrorException("Could not upload file");
+                        }
+
+                        $supplier->files()->create(['path' => $path]);
+                    }
                 }
             }
-        }
+        });
 
         return redirect()->route('events.view', ['event' => $supplier->category->event]);
     }
@@ -84,9 +94,13 @@ class SupplierController extends Controller
         $event = $file->supplier->category->event;
         $this->authorize(Permission::EDIT_SUPPLIER->value, $file->supplier);
 
-        if ($file->delete()) {
-            Storage::delete($file->path);
-        }
+        DB::transaction(function () use ($file) {
+            if ($file->delete()) {
+                if (!Storage::delete($file->path)) {
+                    throw new \ErrorException("Could not remove file");
+                }
+            }
+        });
 
         return redirect(route('events.view', ['event' => $event]));
     }
