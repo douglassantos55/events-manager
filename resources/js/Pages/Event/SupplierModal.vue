@@ -105,7 +105,9 @@
                             />
                         </td>
                         <td>
-                            <va-button @click="createInstallment">Add</va-button>
+                            <va-button @click="createInstallment" :loading="installmentForm.processing">
+                                Add
+                            </va-button>
                         </td>
                     </tr>
                 </table>

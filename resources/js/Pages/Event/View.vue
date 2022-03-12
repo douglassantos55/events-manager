@@ -65,8 +65,11 @@
                     <va-card-title>Financing</va-card-title>
 
                     <va-card-content>
-                        <p class="mb-2 text--bold text--right">$ 1350 / $ 10000</p>
-                        <va-progress-bar :model-value="50" />
+                        <p class="mb-2 text--bold text--right">{{ expenses }} / {{ event.budget }}</p>
+                        <va-progress-bar :model-value="(expenses / event.budget) * 100" />
+
+                        <p class="my-2 text--bold text--right">{{ paid }} / {{ expenses }}</p>
+                        <va-progress-bar color="success" :model-value="(paid / expenses) * 100" />
                     </va-card-content>
                 </va-card>
             </div>
@@ -99,8 +102,6 @@
         <div class="mt-4">
             <div v-if="tab === 'Suppliers'">
                 <div class="d-flex justify--space-between align--center">
-                    <h2 class="display-3">Suppliers</h2>
-
                     <va-button icon="add" size="small" @click="showCategoryModal = !showCategoryModal" />
 
                     <va-modal v-model="showCategoryModal" size="small" title="Add category" hide-default-actions>
@@ -180,6 +181,37 @@ export default {
             });
         }
 
+        const hired = computed(() => {
+            let suppliers = []
+            props.event.categories.forEach(category => {
+                suppliers = [
+                    ...suppliers,
+                    ...category.suppliers.filter(supplier => {
+                        return supplier.status === 'hired'
+                    })
+                ]
+            })
+            return suppliers
+        })
+
+        const expenses = computed(() => {
+            return hired.value.reduce((total, supplier) => {
+                return total + parseFloat(supplier.value)
+            }, 0)
+        })
+
+        const paid = computed(() => {
+            return hired.value.reduce((total, supplier) => {
+                return total + supplier.installments.reduce((total, installment) => {
+                    if (installment.status === 'paid') {
+                        return total + parseFloat(installment.value)
+                    }
+                    return total
+                }, 0)
+            }, 0)
+        });
+
+
         function addCategory() {
             categoryForm.clearErrors();
             categoryForm.post(route('categories.attach', props.event.id), {
@@ -195,6 +227,8 @@ export default {
             tab,
             remove,
             assign,
+            paid,
+            expenses,
             categoryForm,
             addCategory,
             assignableMembers,
