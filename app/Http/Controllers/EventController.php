@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Event;
+use App\Models\Guest;
 use App\Models\Permission;
 use App\Models\SupplierCategory;
 use Illuminate\Http\Request;
@@ -24,12 +25,13 @@ class EventController extends Controller
     {
         $this->authorize(Permission::VIEW_EVENT->value, $event);
 
-        $event->loadMissing(['categories', 'assignees']);
+        $event->loadMissing(['categories', 'assignees', 'guests']);
         $members = $request->user()->members()->active()->get();
 
         return inertia('Event/View', [
             'event' => $event,
             'members' => $members,
+            'relations' => Guest::RELATIONS,
             'categories' => SupplierCategory::all(),
         ]);
     }

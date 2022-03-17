@@ -89,7 +89,7 @@
         <va-tabs v-model="tab" grow class="mt-4">
             <template #tabs>
                 <va-tab
-                    v-for="title in ['Dashboard', 'Suppliers', 'Agenda', 'Guests']"
+                    v-for="title in ['Suppliers', 'Agenda', 'Guests']"
                     :name="title"
                     :key="title"
                     active
@@ -100,38 +100,93 @@
         </va-tabs>
 
         <div class="mt-4">
-            <div v-if="tab === 'Suppliers'">
-                <div class="d-flex justify--space-between align--center">
-                    <va-button icon="add" size="small" @click="showCategoryModal = !showCategoryModal" />
-
-                    <va-modal v-model="showCategoryModal" size="small" title="Add category" hide-default-actions>
-                        <form @submit.prevent="addCategory">
-                            <va-select
-                                v-model="categoryForm.category"
-                                :options="categories"
-                                text-by="name"
-                                value-by="id"
-                                track-by="id"
-                                label="Category"
-                                class="mb-4"
-                                :error="!!categoryForm.errors.category"
-                                :error-messages="categoryForm.errors.category"
-                            />
-
-                            <va-input
-                                v-model="categoryForm.budget"
-                                label="Budget"
-                                class="mb-4"
-                                :error="!!categoryForm.errors.budget"
-                                :error-messages="categoryForm.errors.budget"
-                            />
-
-                            <va-button type="submit" :loading="categoryForm.processing">
-                                Add category
-                            </va-button>
-                        </form>
-                    </va-modal>
+            <div v-if="tab === 'Guests'">
+                <div class="text-right">
+                    <va-button icon="add" size="small" @click="guestModal.open" />
                 </div>
+
+                <va-modal v-model="guestModal.visible.value" size="small" title="Invite guest" hide-default-actions>
+                    <form @submit.prevent="guestForm.post(route('guests.invite', event.id))">
+                        <va-input
+                            v-model="guestForm.name"
+                            label="Name"
+                            class="mb-4"
+                            :error="!!guestForm.errors.name"
+                            :error-messages="guestForm.errors.name"
+                        />
+
+                        <va-input
+                            v-model="guestForm.email"
+                            label="Email"
+                            class="mb-4"
+                            :error="!!guestForm.errors.email"
+                            :error-messages="guestForm.errors.email"
+                        />
+
+                        <va-select
+                            v-model="guestForm.relation"
+                            label="Relation"
+                            class="mb-4"
+                            :options="relations"
+                            :error="!!guestForm.errors.relation"
+                            :error-messages="guestForm.errors.relation"
+                        />
+
+                        <va-button type="submit" :loading="guestForm.processing">
+                            Invite guest
+                        </va-button>
+                    </form>
+                </va-modal>
+
+                <table class="va-table" style="width: 100%">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Relation</th>
+                        <th>Status</th>
+                    </tr>
+
+                    <tr v-for="guest in event.guests" :key="guest.id">
+                        <td>{{ guest.name }}</td>
+                        <td>{{ guest.email }}</td>
+                        <td>{{ guest.relation }}</td>
+                        <td>Pending</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div v-if="tab === 'Suppliers'">
+                <div class="text-right">
+                    <va-button icon="add" size="small" @click="categoryModal.open" />
+                </div>
+
+                <va-modal v-model="categoryModal.visible.value" size="small" title="Add category" hide-default-actions>
+                    <form @submit.prevent="addCategory">
+                        <va-select
+                            v-model="categoryForm.category"
+                            :options="categories"
+                            text-by="name"
+                            value-by="id"
+                            track-by="id"
+                            label="Category"
+                            class="mb-4"
+                            :error="!!categoryForm.errors.category"
+                            :error-messages="categoryForm.errors.category"
+                        />
+
+                        <va-input
+                            v-model="categoryForm.budget"
+                            label="Budget"
+                            class="mb-4"
+                            :error="!!categoryForm.errors.budget"
+                            :error-messages="categoryForm.errors.budget"
+                        />
+
+                        <va-button type="submit" :loading="categoryForm.processing">
+                            Add category
+                        </va-button>
+                    </form>
+                </va-modal>
 
                 <va-list>
                     <Category
@@ -151,21 +206,29 @@
 import { ref, computed } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
 import { Link, useForm } from '@inertiajs/inertia-vue3'
+import useModal from '../../composables/useModal'
 import Category from './Category.vue'
 
 export default {
-    props: ['event', 'members', 'suppliers', 'categories'],
+    props: ['event', 'members', 'suppliers', 'categories', 'relations'],
     components: {
         Link,
         Category,
     },
     setup(props) {
-        const tab = ref('Dashboard')
-        const showCategoryModal = ref(false)
+        const tab = ref('Suppliers')
+        const guestModal = useModal()
+        const categoryModal = useModal()
 
         const categoryForm = useForm({
             category: '',
             budget: '',
+        })
+
+        const guestForm = useForm({
+            name: '',
+            email: '',
+            relation: '',
         })
 
         function remove(assignee) {
@@ -211,12 +274,9 @@ export default {
             }, 0)
         });
 
-
         function addCategory() {
             categoryForm.clearErrors();
-            categoryForm.post(route('categories.attach', props.event.id), {
-                onSuccess: () => (showCategoryModal.value = false)
-            })
+            categoryForm.post(route('categories.attach', props.event.id))
         }
 
         const assignableMembers = computed(() => props.members.filter(member => {
@@ -229,10 +289,12 @@ export default {
             assign,
             paid,
             expenses,
+            guestModal,
+            categoryModal,
             categoryForm,
+            guestForm,
             addCategory,
             assignableMembers,
-            showCategoryModal,
         }
     },
 }

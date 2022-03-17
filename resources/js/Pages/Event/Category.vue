@@ -8,7 +8,7 @@
 
         <va-list-item-section>
             <va-list-item-label>
-                <va-button icon="add" color="success" size="small" class="mr-2" @click="supplierModal.show" />
+                <va-button icon="add" color="success" size="small" class="mr-2" @click="supplierModal.open" />
                 <va-button icon="delete" color="danger" size="small" @click="removeCategory" />
             </va-list-item-label>
         </va-list-item-section>
@@ -34,7 +34,7 @@
 
             <va-list-item-section>
                 <va-list-item-label>
-                    <va-button icon="edit" size="small" class="mr-2" @click="() => {selectedSupplier = supplier; supplierModal.show()}" />
+                    <va-button icon="edit" size="small" class="mr-2" @click="() => {selectedSupplier = supplier; supplierModal.open()}" />
                     <va-button icon="delete" color="danger" size="small" @click="removeSupplier(supplier.id)" />
                 </va-list-item-label>
             </va-list-item-section>
@@ -54,16 +54,7 @@
 import { ref, watch, computed } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
 import SupplierModal from './SupplierModal.vue'
-
-function useModal(initialProps) {
-    const visible = ref(false)
-
-    function show(prop) {
-        visible.value = true
-    }
-
-    return { visible, show }
-}
+import useModal from '../../composables/useModal'
 
 export default {
     props: ['event', 'category', 'suppliers'],
@@ -72,17 +63,12 @@ export default {
     },
     setup(props) {
         const selectedSupplier = ref(null)
+        const supplierModal = useModal()
 
         watch(() => props.category, () => {
             if (selectedSupplier.value) {
                 selectedSupplier.value = props.category.suppliers.find(sup => sup.id == selectedSupplier.value.id)
             }
-        })
-
-        const supplierModal = useModal({
-            event: props.event,
-            category: props.category,
-            suppliers: props.suppliers,
         })
 
         watch(() => supplierModal.visible.value, (current, previous) => {
