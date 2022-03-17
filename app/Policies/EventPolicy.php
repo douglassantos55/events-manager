@@ -79,4 +79,16 @@ class EventPolicy
     {
         return in_array($event->user_id, [$user->id, $user->captain?->id]);
     }
+
+    /**
+     * Determine whether the user can invite guests to the event.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Event  $event
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function inviteGuest(User $user, Event $event)
+    {
+        return in_array($event->user_id, [$user->id, $user->captain?->id]);
+    }
 }

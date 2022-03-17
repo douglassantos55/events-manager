@@ -33,4 +33,6 @@ enum Permission: string
     case ADD_INSTALLMENT = 'add-installment';
     case EDIT_INSTALLMENT = 'edit-installment';
     case REMOVE_INSTALLMENT = 'remove-installment';
+
+    case INVITE_GUEST = 'invite-guest';
 }

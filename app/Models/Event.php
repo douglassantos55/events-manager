@@ -33,4 +33,9 @@ class Event extends Model
     {
         return $this->hasMany(EventCategory::class);
     }
+
+    public function guests(): HasMany
+    {
+        return $this->hasMany(Guest::class);
+    }
 }

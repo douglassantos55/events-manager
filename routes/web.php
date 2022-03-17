@@ -9,6 +9,7 @@ use App\Http\Controllers\Event\AssigneeController;
 use App\Http\Controllers\Event\CategoryController;
 use App\Http\Controllers\Event\InstallmentController;
 use App\Http\Controllers\Event\SupplierController;
+use App\Http\Controllers\GuestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -87,4 +88,12 @@ Route::controller(MemberController::class)->group(function () {
 
     Route::get('/members/join/{member}', 'join')->name('members.join');
     Route::post('/members/save/{member}', 'save')->name('members.save');
+});
+
+Route::controller(GuestController::class)->group(function () {
+    Route::middleware('auth')->group(function () {
+        Route::post('/guests/{event}', 'invite')->name('guests.invite');
+    });
+
+    Route::get('/guests/confirmation/{guest}', 'confirm')->name('guests.confirm');
 });
