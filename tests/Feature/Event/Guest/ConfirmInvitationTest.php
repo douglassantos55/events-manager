@@ -5,6 +5,7 @@ namespace Test\Feature\Event\Guest;
 use App\Models\Event;
 use App\Models\Guest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Inertia\Testing\AssertableInertia;
 use Tests\TestCase;
 
 class ConfirmInvitationTest extends TestCase
@@ -47,5 +48,11 @@ class ConfirmInvitationTest extends TestCase
 
         $response = $this->get(route('guests.confirm', ['guest' => $guest]));
         $response->assertNotFound();
+    }
+
+    public function test_thank_you_page()
+    {
+        $response = $this->get(route('guests.thanks'));
+        $response->assertInertia(fn (AssertableInertia $page) => $page->component('Guest/Thanks'));
     }
 }

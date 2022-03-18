@@ -47,4 +47,9 @@ class GuestController extends Controller
 
         return redirect()->route('guests.thanks');
     }
+
+    public function thanks()
+    {
+        return inertia('Guest/Thanks');
+    }
 }
