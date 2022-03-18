@@ -150,7 +150,7 @@
                         <td>{{ guest.name }}</td>
                         <td>{{ guest.email }}</td>
                         <td>{{ guest.relation }}</td>
-                        <td>Pending</td>
+                        <td>{{ guest.status }}</td>
                     </tr>
                 </table>
             </div>

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class GuestController extends Controller
 {
@@ -32,5 +33,18 @@ class GuestController extends Controller
         }
 
         return redirect()->route('events.view', ['event' => $event]);
+    }
+
+    public function confirm(Guest $guest)
+    {
+        if ($guest->status != Guest::STATUS_PENDING) {
+            throw new NotFoundHttpException();
+        }
+
+        if (!$guest->update(['status' => Guest::STATUS_CONFIRMED])) {
+            return back()->withErrors('Could not confirm your invitation');
+        }
+
+        return redirect()->route('guests.thanks');
     }
 }

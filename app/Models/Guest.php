@@ -13,8 +13,13 @@ class Guest extends Model
     protected $fillable = [
         'name',
         'email',
+        'status',
         'relation',
     ];
+
+    const STATUS_CONFIRMED = 'confirmed';
+    const STATUS_PENDING = 'pending';
+    const STATUS_REFUSED = 'refused';
 
     const RELATIONS = [
         'friend',

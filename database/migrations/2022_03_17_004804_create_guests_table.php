@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Event;
+use App\Models\Guest;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,6 +20,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('relation');
             $table->string('email')->unique();
+            $table->string('status')->default(Guest::STATUS_PENDING);
             $table->foreignIdFor(Event::class);
             $table->timestamps();
         });

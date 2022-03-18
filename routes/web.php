@@ -95,5 +95,6 @@ Route::controller(GuestController::class)->group(function () {
         Route::post('/guests/{event}', 'invite')->name('guests.invite');
     });
 
+    Route::get('/guests/thank-you', 'thanks')->name('guests.thanks');
     Route::get('/guests/confirmation/{guest}', 'confirm')->name('guests.confirm');
 });
