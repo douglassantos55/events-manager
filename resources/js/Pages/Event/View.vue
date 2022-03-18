@@ -79,8 +79,10 @@
                     <va-card-title>Guests</va-card-title>
 
                     <va-card-content>
-                        <p class="mb-2 text--bold text--right">135 / 300</p>
-                        <va-progress-bar :model-value="50" />
+                        <p class="mb-2 text--bold text--right">
+                            {{ confirmedGuests }} / {{ event.guests.length }}
+                        </p>
+                        <va-progress-bar :model-value="(confirmedGuests / event.guests.length) * 100" />
                     </va-card-content>
                 </va-card>
             </div>
@@ -106,7 +108,7 @@
                 </div>
 
                 <va-modal v-model="guestModal.visible.value" size="small" title="Invite guest" hide-default-actions>
-                    <form @submit.prevent="guestForm.post(route('guests.invite', event.id))">
+                    <form @submit.prevent="guestForm.post(route('guests.invite', event.id), { onSuccess: guestModal.close })">
                         <va-input
                             v-model="guestForm.name"
                             label="Name"
@@ -224,6 +226,7 @@ export default {
             category: '',
             budget: '',
         })
+        console.log(categoryForm)
 
         const guestForm = useForm({
             name: '',
@@ -279,6 +282,8 @@ export default {
             categoryForm.post(route('categories.attach', props.event.id))
         }
 
+        const confirmedGuests = props.event.guests.filter(guest => guest.status == 'confirmed').length
+
         const assignableMembers = computed(() => props.members.filter(member => {
             return !props.event.assignees.find(assignee => assignee.id === member.id)
         }));
@@ -294,6 +299,7 @@ export default {
             categoryForm,
             guestForm,
             addCategory,
+            confirmedGuests,
             assignableMembers,
         }
     },

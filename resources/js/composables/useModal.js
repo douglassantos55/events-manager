@@ -3,10 +3,9 @@ import { ref } from 'vue'
 export default function () {
     const visible = ref(false)
 
-    function open() {
-        visible.value = true
-    }
+    const open = () => (visible.value = true)
+    const close = () => (visible.value = false)
 
-    return { visible, open }
+    return { visible, open, close }
 }
 
