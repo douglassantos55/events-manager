@@ -41,10 +41,17 @@ class GuestController extends Controller
             throw new NotFoundHttpException();
         }
 
-        if (!$guest->update(['status' => Guest::STATUS_CONFIRMED])) {
-            return back()->withErrors('Could not confirm your invitation');
+        $guest->update(['status' => Guest::STATUS_CONFIRMED]);
+        return redirect()->route('guests.thanks');
+    }
+
+    public function refuse(Guest $guest)
+    {
+        if ($guest->status != Guest::STATUS_PENDING) {
+            throw new NotFoundHttpException();
         }
 
+        $guest->update(['status' => Guest::STATUS_REFUSED]);
         return redirect()->route('guests.thanks');
     }
 

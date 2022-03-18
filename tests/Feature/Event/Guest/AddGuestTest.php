@@ -211,5 +211,6 @@ class AddGuestTest extends TestCase
         $mailable->assertSeeInHtml($guest->name);
         $mailable->assertSeeInHtml($guest->event->title);
         $mailable->assertSeeInHtml(route('guests.confirm', ['guest' => $guest]));
+        $mailable->assertSeeInHtml(route('guests.refuse', ['guest' => $guest]));
     }
 }

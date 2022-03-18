@@ -96,5 +96,6 @@ Route::controller(GuestController::class)->group(function () {
     });
 
     Route::get('/guests/thank-you', 'thanks')->name('guests.thanks');
-    Route::get('/guests/confirmation/{guest}', 'confirm')->name('guests.confirm');
+    Route::get('/guests/confirm/{guest}', 'confirm')->name('guests.confirm');
+    Route::get('/guests/refuse/{guest}', 'refuse')->name('guests.refuse');
 });
