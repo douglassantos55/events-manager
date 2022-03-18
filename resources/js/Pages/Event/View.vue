@@ -103,7 +103,13 @@
 
         <div class="mt-4">
             <div v-if="tab === 'Guests'">
-                <div class="text-right">
+                <div class="d-flex align--center justify--space-between">
+                    <va-input v-model="guest" placeholder="Search for a guest" class="mr-4 grow" clearable>
+                        <template #prependInner>
+                            <va-icon name="search" />
+                        </template>
+                    </va-input>
+
                     <va-button icon="add" size="small" @click="guestModal.open" />
                 </div>
 
@@ -140,21 +146,16 @@
                     </form>
                 </va-modal>
 
-                <table class="va-table" style="width: 100%">
-                    <tr>
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Relation</th>
-                        <th>Status</th>
-                    </tr>
-
-                    <tr v-for="guest in event.guests" :key="guest.id">
-                        <td>{{ guest.name }}</td>
-                        <td>{{ guest.email }}</td>
-                        <td>{{ guest.relation }}</td>
-                        <td>{{ guest.status }}</td>
-                    </tr>
-                </table>
+                <va-data-table
+                    :filter="guest"
+                    :items="event.guests"
+                    :columns="[
+                        { key: 'name', sortable: true },
+                        { key: 'email' },
+                        { key: 'relation', sortable: true },
+                        { key: 'status', sortable: true }
+                    ]"
+                />
             </div>
 
             <div v-if="tab === 'Suppliers'">
@@ -218,7 +219,9 @@ export default {
         Category,
     },
     setup(props) {
+        const guest = ref('')
         const tab = ref('Suppliers')
+
         const guestModal = useModal()
         const categoryModal = useModal()
 
@@ -293,6 +296,7 @@ export default {
             remove,
             assign,
             paid,
+            guest,
             expenses,
             guestModal,
             categoryModal,
