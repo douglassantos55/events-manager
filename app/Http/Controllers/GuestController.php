@@ -14,6 +14,15 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class GuestController extends Controller
 {
+    public function update(Request $request, Guest $guest)
+    {
+        $this->authorize(Permission::EDIT_GUEST->value, $guest);
+
+        $guest->update($request->all());
+
+        return redirect()->route('events.view', ['event' => $guest->event]);
+    }
+
     public function invite(Request $request, Event $event)
     {
         $this->authorize(Permission::INVITE_GUEST->value, $event);

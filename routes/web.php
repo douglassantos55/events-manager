@@ -93,6 +93,7 @@ Route::controller(MemberController::class)->group(function () {
 Route::controller(GuestController::class)->group(function () {
     Route::middleware('auth')->group(function () {
         Route::post('/guests/{event}', 'invite')->name('guests.invite');
+        Route::put('/guests/{guest}', 'update')->name('guests.update');
     });
 
     Route::get('/guests/thank-you', 'thanks')->name('guests.thanks');
