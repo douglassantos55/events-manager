@@ -113,8 +113,8 @@
                     <va-button icon="add" size="small" @click="guestModal.open" />
                 </div>
 
-                <va-modal v-model="guestModal.visible.value" size="small" title="Invite guest" hide-default-actions>
-                    <form @submit.prevent="guestForm.post(route('guests.invite', event.id), { onSuccess: guestModal.close })">
+                <va-modal v-model="guestModal.visible.value" size="small" title="Invite guest" hide-default-actions @cancel="editGuest = null">
+                    <form @submit.prevent="saveGuest">
                         <va-input
                             v-model="guestForm.name"
                             label="Name"
@@ -140,6 +140,16 @@
                             :error-messages="guestForm.errors.relation"
                         />
 
+                        <va-select
+                            v-if="editGuest"
+                            v-model="guestForm.status"
+                            label="Status"
+                            class="mb-4"
+                            :options="['pending', 'confirmed', 'refused']"
+                            :error="!!guestForm.errors.status"
+                            :error-messages="guestForm.errors.status"
+                        />
+
                         <va-button type="submit" :loading="guestForm.processing">
                             Invite guest
                         </va-button>
@@ -153,9 +163,15 @@
                         { key: 'name', sortable: true },
                         { key: 'email' },
                         { key: 'relation', sortable: true },
-                        { key: 'status', sortable: true }
+                        { key: 'status', sortable: true },
+                        { key: 'actions' },
                     ]"
-                />
+                >
+                    <template #cell(actions)="{ rowIndex }">
+                        <va-button flat icon="edit" @click="editGuest = event.guests[rowIndex]" />
+                        <va-button flat icon="delete" />
+                    </template>
+                </va-data-table>
             </div>
 
             <div v-if="tab === 'Suppliers'">
@@ -206,7 +222,7 @@
 </template>
 
 <script>
-import { ref, computed } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
 import { Link, useForm } from '@inertiajs/inertia-vue3'
 import useModal from '../../composables/useModal'
@@ -220,6 +236,7 @@ export default {
     },
     setup(props) {
         const guest = ref('')
+        const editGuest = ref(null)
         const tab = ref('Suppliers')
 
         const guestModal = useModal()
@@ -229,12 +246,26 @@ export default {
             category: '',
             budget: '',
         })
-        console.log(categoryForm)
 
         const guestForm = useForm({
             name: '',
             email: '',
+            status: '',
             relation: '',
+        })
+
+        watch(() => editGuest.value, (current, previous) => {
+            if (!current) {
+                guestForm.reset()
+                guestModal.close()
+            } else {
+                guestForm.name = current.name
+                guestForm.email = current.email
+                guestForm.status = current.status
+                guestForm.relation = current.relation
+
+                guestModal.open()
+            }
         })
 
         function remove(assignee) {
@@ -285,11 +316,27 @@ export default {
             categoryForm.post(route('categories.attach', props.event.id))
         }
 
-        const confirmedGuests = props.event.guests.filter(guest => guest.status == 'confirmed').length
+        const confirmedGuests = computed(() => {
+            return props.event.guests.filter(guest => guest.status == 'confirmed').length
+        })
 
         const assignableMembers = computed(() => props.members.filter(member => {
             return !props.event.assignees.find(assignee => assignee.id === member.id)
         }));
+
+        function saveGuest() {
+            if (editGuest.value) {
+                guestForm.put(route('guests.update', editGuest.value.id), {
+                    preserveScroll: true,
+                    onSuccess: editGuest.value = null
+                })
+            } else {
+                guestForm.post(route('guests.invite', props.event.id), {
+                    preserveScroll: true,
+                    onSuccess: guestModal.close
+                })
+            }
+        }
 
         return {
             tab,
@@ -297,10 +344,12 @@ export default {
             assign,
             paid,
             guest,
+            editGuest,
             expenses,
             guestModal,
             categoryModal,
             categoryForm,
+            saveGuest,
             guestForm,
             addCategory,
             confirmedGuests,
