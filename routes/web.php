@@ -94,6 +94,7 @@ Route::controller(GuestController::class)->group(function () {
     Route::middleware('auth')->group(function () {
         Route::post('/guests/{event}', 'invite')->name('guests.invite');
         Route::put('/guests/{guest}', 'update')->name('guests.update');
+        Route::delete('/guests/{guest}', 'delete')->name('guests.delete');
     });
 
     Route::get('/guests/thank-you', 'thanks')->name('guests.thanks');

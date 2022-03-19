@@ -21,4 +21,16 @@ class GuestPolicy
     {
         return in_array($guest->event->user_id, [$user->id, $user->captain?->id]);
     }
+
+    /**
+     * Determine whether the user can delete the model.
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Guest  $guest
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function deleteGuest(User $user, Guest $guest)
+    {
+        return in_array($guest->event->user_id, [$user->id, $user->captain?->id]);
+    }
 }

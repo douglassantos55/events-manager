@@ -23,6 +23,15 @@ class GuestController extends Controller
         return redirect()->route('events.view', ['event' => $guest->event]);
     }
 
+    public function delete(Guest $guest)
+    {
+        $this->authorize(Permission::DELETE_GUEST->value, $guest);
+
+        $guest->delete();
+
+        return redirect()->route('events.view', ['event' => $guest->event]);
+    }
+
     public function invite(Request $request, Event $event)
     {
         $this->authorize(Permission::INVITE_GUEST->value, $event);
