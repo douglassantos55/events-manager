@@ -169,7 +169,7 @@
                 >
                     <template #cell(actions)="{ rowIndex }">
                         <va-button flat icon="edit" @click="editGuest = event.guests[rowIndex]" />
-                        <va-button flat icon="delete" />
+                        <va-button flat color="danger" icon="delete" @click="deleteGuest(event.guests[rowIndex])" />
                     </template>
                 </va-data-table>
             </div>
@@ -324,6 +324,12 @@ export default {
             return !props.event.assignees.find(assignee => assignee.id === member.id)
         }));
 
+        function deleteGuest(guest) {
+            Inertia.delete(route('guests.delete', guest.id), {
+                preserveScroll: true,
+            })
+        }
+
         function saveGuest() {
             if (editGuest.value) {
                 guestForm.put(route('guests.update', editGuest.value.id), {
@@ -351,6 +357,7 @@ export default {
             categoryForm,
             saveGuest,
             guestForm,
+            deleteGuest,
             addCategory,
             confirmedGuests,
             assignableMembers,
