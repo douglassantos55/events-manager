@@ -38,4 +38,9 @@ class Event extends Model
     {
         return $this->hasMany(Guest::class);
     }
+
+    public function agenda(): HasMany
+    {
+        return $this->hasMany(Agenda::class);
+    }
 }

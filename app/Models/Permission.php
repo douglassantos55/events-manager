@@ -37,4 +37,6 @@ enum Permission: string
     case INVITE_GUEST = 'invite-guest';
     case EDIT_GUEST = 'edit-guest';
     case DELETE_GUEST = 'delete-guest';
+
+    case CREATE_AGENDA = 'create-agenda';
 }

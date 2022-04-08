@@ -10,6 +10,7 @@ use App\Http\Controllers\Event\CategoryController;
 use App\Http\Controllers\Event\InstallmentController;
 use App\Http\Controllers\Event\SupplierController;
 use App\Http\Controllers\GuestController;
+use App\Http\Controllers\AgendaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -63,6 +64,10 @@ Route::prefix('/events')->group(function () {
         Route::post('/installments/{supplier}', 'create')->name('installments.create');
         Route::put('/installments/{installment}', 'update')->name('installments.update');
         Route::delete('/installments/{installment}', 'delete')->name('installments.delete');
+    });
+
+    Route::controller(AgendaController::class)->middleware('auth')->group(function () {
+        Route::post('/agenda/{event}', 'attach')->name('agenda.attach');
     });
 });
 
